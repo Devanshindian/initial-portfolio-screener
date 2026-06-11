@@ -1,0 +1,18 @@
+# OS junk
+.DS_Store
+
+# Office lock / temp files
+~$*
+.~*
+*.tmp
+
+# Confidential per-company working data — kept local, never published.
+# The companies/ folder itself is kept (via .gitkeep); its contents are not.
+/companies/*
+!/companies/.gitkeep
+
+# Raw company source folder at repo root
+/Popees/
+
+# Internal framework research derived from confidential deals
+/nbfc-framework-research/

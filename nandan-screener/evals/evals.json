@@ -1,0 +1,30 @@
+{
+  "skill_name": "nandan-screener",
+  "notes": {
+    "when_to_run": "Run evals once the full skill is built end-to-end (Sections 0 to 6 complete). Also run any time you make a significant change to a reference file or rule, to make sure you haven't accidentally broken something that was working. These evals are placeholders — replace [COMPANY] with a real company you have already screened manually and whose correct output you know.",
+    "how_documents_are_provided": "Source documents (annual report PDFs, MIS files) are shared directly in the chat by the user — not from a separate folder path. The skill reads them from the conversation. All outputs are written to companies/[company_name]/ inside this project."
+  },
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Screen [COMPANY_A] for Nandan fund investment. I'm sharing their audited annual reports (FY23 and FY24) and MIS for Jan–Mar 2025 in this chat. Run the full Nandan initial check.",
+      "expected_output": "Full Sections 0 to 6 screening note as a .docx, closing with a diligence-framed recommendation (Proceed to diligence / Pass / Pause) plus Strengths, Weaknesses, and Areas for further deep diligence. D/TNW and cash runway calculated correctly. Both cash runway scenarios (ST debt refinanced and ST debt fully repaid) shown. All section outputs written to companies/[COMPANY_A]/.",
+      "files": [],
+      "notes": "Replace [COMPANY_A] with a real company before running. Expected outcome: Proceed to diligence. Tests the full happy-path flow with both audited and MIS data available."
+    },
+    {
+      "id": 2,
+      "prompt": "Run an initial Nandan check on [COMPANY_B]. I'm sharing only MIS data in this chat — no audited reports yet.",
+      "expected_output": "Report with explicit data-source flags noting MIS-only basis. Missing audited data gaps listed at the end of the report. All outputs written to companies/[COMPANY_B]/.",
+      "files": [],
+      "notes": "Replace with a real company. Tests MIS-only data handling and gap flagging — the skill should not silently skip gaps but explicitly call them out."
+    },
+    {
+      "id": 3,
+      "prompt": "Analyze [COMPANY_C] for the Nandan fund. I'm sharing their documents in this chat. This company is a deep-tech hardware business with 60% revenue from government contracts.",
+      "expected_output": "Section 1 REJECTED — Rule 1 (Deep Tech) and Rule 2 (Government Revenue) both triggered. Rejection notice issued at the top of Section 1. Full analysis continues through Sections 2 to 6 regardless. The closing recommendation reflects the rejection (Pass). Output written to companies/[COMPANY_C]/.",
+      "files": [],
+      "notes": "Tests Section 1 rejection logic. The rejection is a hard stop on the deal recommendation only — the full Sections 0 to 6 analysis still runs and is included in the note. The skill should NOT stop after Section 1."
+    }
+  ]
+}
