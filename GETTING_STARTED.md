@@ -13,6 +13,8 @@ and Claude will produce the screening note for you.
 - A Claude Pro account (the paid plan, claude.ai). Have your login email and password ready.
 - The company's documents saved on your computer (audited financials, MIS, debt schedule, ageing report, pitch deck, shareholding). PDF and Excel are fine.
 
+> **IMPORTANT: Always run this project using Claude Opus. Do not use Sonnet or Haiku. The screening framework involves complex financial analysis across multiple sections and requires Opus-level reasoning to produce accurate, reliable results. Using a smaller model will lead to errors in the output.**
+
 Roughly 20-30 minutes the first time. After that, each new company takes a couple of minutes to set up.
 
 ---
