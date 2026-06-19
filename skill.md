@@ -17,7 +17,7 @@ Before running any analysis, identify the following from the user's message:
  
 **Required:**
 - Company name
-- Path to the company's documents folder — the user will always provide a folder containing all relevant files
+- Path to the company's **source documents folder** — the folder the user attached/created with all the relevant files. This is the INPUT folder. It can sit anywhere the user dropped it (typically a folder at the workspace root, e.g. `[Company Name]/`).
 **Optional but important:**
 - Debt structure document (separate sheet or within the folder)
 - Customer-wise revenue sheet / latest debtor ageing report
@@ -25,12 +25,21 @@ Before running any analysis, identify the following from the user's message:
 - Company deck (pitch deck or investor presentation)
 - Company structure document (org chart, shareholding pattern, subsidiary list)
 If the documents folder path is missing, ask for it before proceeding. For any missing optional documents, ask the user once — if unavailable, proceed with what's provided.
+
+### Input vs output folders — do not mix them (critical)
+
+There are two distinct folders, and they must stay separate:
+
+- **Source/input folder** = the folder the user attached (their original documents). Read from it **in place**. Never move, copy, rename, or relocate the user's source files. Leave this folder exactly as the user left it.
+- **Output folder** = `companies/[company_name]/`. Create it if it does not exist. This folder holds **only the artifacts this skill generates**: `company_structure.md`, `dtnw_granularities.md`, `mis_[period].md`, `Financial_Appraisal_[company_name].xlsx`, `section0_output.md` to `section6_output.md`, `report_draft.md`, and the final `.docx`.
+
+Do **not** move the attached source folder into `companies/`. If the user happens to have dropped their documents at a path that is already inside `companies/[company_name]/`, leave them there and still write outputs alongside — but the default and correct pattern is source folder separate, `companies/[company_name]/` for outputs only.
  
 ---
  
 ## Step 1: Discover and Classify Documents
  
-Scan the documents folder and classify each file:
+Scan the **source documents folder** (the user's attached folder, read in place — do not move it) and classify each file:
  
 | Type | Indicators | Use for |
 |------|-----------|---------|
@@ -62,6 +71,8 @@ Follow `references/template-integration.md` end to end. That file defines the fu
 ## Step 3: Run the 6-Section Analysis
 
 Work through each section in order. Read the corresponding reference file before starting that section.
+
+**Critical rule: write each section's output file to disk before moving to the next section.** Do not hold section outputs in memory and flush them all at the end. If a write fails, stop and resolve it before continuing.
 
 ### Section 0 — Company, Industry & Founder Overview
 → Read `references/section0-overview.md`
@@ -109,6 +120,35 @@ Build the full margin waterfall (Revenue → Gross Margin → CM1 → CM2 → EB
 
 ---
 
+## Step 3b: Mandatory File Verification (BLOCKING)
+
+**Do not proceed to Step 4 until every file in this checklist exists.** Run the following check after completing all sections in Step 3:
+
+```bash
+ls companies/[company_name]/section0_output.md \
+   companies/[company_name]/section1_output.md \
+   companies/[company_name]/section2_output.md \
+   companies/[company_name]/section3_output.md \
+   companies/[company_name]/section4_output.md \
+   companies/[company_name]/section5_output.md \
+   companies/[company_name]/section6_output.md
+```
+
+If any file is missing:
+1. Stop — do not proceed to Step 4.
+2. Write the missing section output file(s) now.
+3. Re-run the check until all 7 files are confirmed present.
+
+Also verify:
+- `companies/[company_name]/company_structure.md` exists
+- `companies/[company_name]/dtnw_granularities.md` exists
+- `companies/[company_name]/mis_[period].md` exists (if MIS data was available)
+- `companies/[company_name]/Financial_Appraisal_[company_name].xlsx` exists
+
+**The final report must be assembled from the section files, not from memory.** If a section file exists but appears incomplete, rewrite it before assembling.
+
+---
+
 ## Step 4: Compile the One-Pager
 
 Read `references/output-template.md` for the exact report structure and formatting instructions.
@@ -125,7 +165,7 @@ python scripts/generate_report.py \
   --output companies/[company_name]/[company_name]_Nandan_Screen_[date].docx
 ```
 
-Also copy the final .docx to the company's source documents folder.
+All generated files, including the final .docx, live in `companies/[company_name]/`. Do not write anything back into the user's source documents folder — keep that folder untouched. If the user explicitly asks for a copy next to their source files, ask first, then copy.
 
 ---
 

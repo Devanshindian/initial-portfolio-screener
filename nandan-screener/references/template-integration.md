@@ -10,11 +10,19 @@
 1. Inventory documents → confirm periods, units, audited vs MIS
 2. Company structure check → save `company_structure.md`
 3. Extract ALL numbers in one pass (P&L + BS + Notes) → do not re-open PDFs after this
-4. Write ONE Python script → fill all columns (C, D, E, F) in a single run
-5. Verify BS check (Row 88 = 0) → fix if non-zero → save
+4. Write ONE Python script → **clear every input cell first**, then fill all columns (C, D, E, F) in a single run
+5. **Recalculate the workbook, then verify the BS check (Row 88) reads 0 *in the actual sheet*** → fix if non-zero → save
 6. Write `dtnw_granularities.md`
 
 One extraction pass → one script → one verification → two markdown outputs. No partial fills, no column-by-column scripts, no re-reading PDFs mid-way.
+
+> **Hard-won gotchas — read these or you will ship a broken sheet (all of these have actually happened):**
+>
+> 1. **The blank template ships with example data baked into the input cells as formulas** (e.g. `=1811.66/100` in Inventories, `=365.66/100` in Investments, `/Z1` cells from the previous company). openpyxl only overwrites the cells you explicitly set, so any input row you *don't* write keeps the old example number and silently corrupts the balance sheet. **Always clear the full set of input rows to 0 first, then write your values.** See Phase 4.
+> 2. **openpyxl does not calculate formulas.** It stores the formula text but writes no result, so after your script the totals, the Row 88 check, and the entire Operating Ratios sheet are **blank** until Excel/LibreOffice recalculates. A Python-side balance check on your own inputs is **not** proof the sheet balances — you must verify the *cell's* computed value. Recalculate the saved file (LibreOffice headless: `soffice --headless --convert-to xlsx --calc ...`, or set `wb.calculation.fullCalcOnLoad = True` / the workbook's `calcPr fullCalcOnLoad="1"` so Excel recalcs on open) and confirm Row 88 shows 0. If neither is available, tell the user the file must be opened and recalculated in Excel (Cmd+=) before the totals appear.
+> 3. **Known template bug: cell `R82` (the FY25 *adjusted* receivables column) contains a hardcoded `+0.1`** (`=D82+I82+0.1`). It throws the adjusted-column balance check off by exactly 0.1 Cr for every company. The raw input columns (C–F) are unaffected. Remove the `+0.1` if you want the adjusted column to balance.
+> 4. **Pure services companies (no inventory, no COGS) trip `#DIV/0!` in the Operating Ratios sheet** — Inventory Days and Creditor Days divide by zero purchases/inventory. This is expected, not a data error; note it and read the ratios that do compute.
+> 5. **Verify the artifact, not just the arithmetic.** Open/inspect what the spreadsheet (and the .docx) actually *display*, not only what your script intended.
 
 ---
 
@@ -154,11 +162,12 @@ After extracting MIS data, write a complete faithful markdown copy of the MIS P&
 Write a single Python script (openpyxl) that fills ALL columns in one execution:
 
 1. Copy blank template to `companies/[company_name]/Financial_Appraisal_[company_name].xlsx`
-2. Fill header rows (1–7) for each column
-3. Fill all P&L input rows for each column
-4. Fill all BS input rows for each column
-5. Read back Row 88 (BS check) for each column — print result
-6. Save
+2. **Clear every input cell first.** Set the full list of input rows (P&L: 11,12,14,18,19,20,21,22,23,24,25,28,30,31,34,36,37,42,43,45,46; BS: 51,52,53,54,55,57,58,59,60,62,63,64,65,70,71,72,73,75,76,77,80,81,82,83,84,85; plus 90,93,94,97,98) to 0 across columns C–F. Do NOT touch the aggregator/formula rows (13,15,17,26,27,29,32,33,35,38,49,50,56,61,66,68,74,78,86,87,88 and the capital-account / cash-flow blocks 100–139). This wipes the template's leftover example data.
+3. Fill header rows (1–7) for each column
+4. Fill all P&L input rows for each column (leave 29 PBT and 35 PAT as the template's formulas — verify they reproduce the audited PBT/PAT rather than hardcoding them)
+5. Fill all BS input rows for each column
+6. Set `wb.calculation.fullCalcOnLoad = True` so Excel recalculates on open
+7. Save, then **recalculate and verify Row 88 = 0 in the recomputed cell** (not just in your own Python sum)
 
 Enter each figure as `raw_value / divisor` (e.g. `71_99_25_02_630/1e7`), not a hand-rounded decimal. This avoids decimal slips and keeps the BS check at exactly 0.
 
@@ -395,7 +404,7 @@ BS closing figures already reflect the removal. No adjustment needed, but flag i
 Run the script once. Then verify:
 
 **1. BS Check (Row 88)**
-`Total Assets − Total Capital and Liabilities` must = 0 for every column. Non-zero = a line item is missing or mis-mapped. Identify the gap, fix in the script, re-run.
+`Total Assets − Total Capital and Liabilities` must = 0 for every column. Non-zero = a line item is missing or mis-mapped. Identify the gap, fix in the script, re-run. **Check the recalculated cell value, not a Python re-sum of your own inputs** — those can agree while the actual sheet shows blanks (un-recalculated) or a non-zero (leftover example data in an input row you didn't clear). If the cells are blank, the workbook has not been recalculated yet (see gotcha 2 at the top of this file).
 
 **2. Column-order swap trap (critical for MIS/provisional)**
 A provisional PDF's extracted text often has its two columns swapped. Because both periods belong to the same entity, a swap still balances — the BS check will NOT catch it. Verify before trusting any MIS figure: match the document's prior-year column against an audited figure you already have (e.g. PPE, total assets). If it matches, the other column is the current MIS period. If it doesn't match, the columns are swapped — flip them.

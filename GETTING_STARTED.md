@@ -119,13 +119,14 @@ Now you simply tell Claude what to do. Click into the **Claude** chat box in VS 
 ```
 Run a Nandan initial check on [COMPANY NAME].
 
-Documents are in the folder companies/[COMPANY NAME]/
-- Audited annual reports: [which years, e.g. FY25 and FY24]
-- MIS financials: [file name and what period it covers]
-- Debt / borrowing schedule: [yes / no]
-- Customer-wise revenue or debtor ageing report: [yes / no]
-- Pitch deck: [yes / no]
-- Company structure / shareholding: [yes / no]
+For each document you have, type @ and pick the file (or drag the file into the chat). Write "none" for anything you do not have.
+- Audited annual reports: @[attach the file(s)] (which years, e.g. FY25 and FY24)
+- MIS / provisional financials: @[attach the file] (what period it covers)
+- Debt / borrowing schedule: @[attach the file, or "none"]
+- Customer-wise revenue or debtor ageing report: @[attach the file, or "none"]
+- Pitch deck: @[attach the file, or "none"]
+- Company structure / shareholding: @[attach the file, or "none"]
+- Any other information: @[attach any other file(s), or write a short note, or "none"]
 
 Deal terms (if known):
 - Ask: [amount in Cr, or "check pitch deck"]
@@ -135,18 +136,21 @@ Deal terms (if known):
 Run the full Sections 0 to 6 framework and produce the .docx screening note.
 ```
 
+(Typing `@` in the Claude chat box opens a file picker so you can point Claude straight at the file. You can attach more than one file on a line, for example both audited years on the "Audited annual reports" line.)
+
 **Worked example, already filled in for Popees** (this is exactly what a finished, ready-to-paste prompt looks like):
 
 ```
 Run a Nandan initial check on Popees.
 
-Documents are in the folder companies/Popees/
-- Audited annual reports: FY25 and FY24
-- MIS financials: the file named "Projections 5 Years" has provisionals through 31 March 2026 (all 12 months)
-- Debt / borrowing schedule: yes
-- Customer-wise revenue or debtor ageing report: yes
-- Pitch deck: yes
-- Company structure / shareholding: yes
+For each document, here is the file (attached with @):
+- Audited annual reports: @Popees_FS_FY25.pdf @Popees_FS_FY24.pdf (FY25 and FY24)
+- MIS / provisional financials: @Projections 5 Years.xlsx (provisionals through 31 March 2026, all 12 months)
+- Debt / borrowing schedule: @Popees_Debt_Schedule.xlsx
+- Customer-wise revenue or debtor ageing report: @Popees_Customer_Revenue.xlsx
+- Pitch deck: @Popees_Pitch_Deck.pdf
+- Company structure / shareholding: @Popees_Shareholding.pdf
+- Any other information: none
 
 Deal terms (if known):
 - Ask: check the pitch deck
@@ -155,6 +159,8 @@ Deal terms (if known):
 
 Run the full Sections 0 to 6 framework and produce the .docx screening note.
 ```
+
+(The file names above are just examples - use @ to pick whatever your actual files are called.)
 
 A note on the "Deal terms" lines: if your friend does not know the ask, the tenure, or what security is being offered, he does not need to hunt for it. He just writes "check the pitch deck" (as above) and Claude will pull whatever is in the documents. If he *does* know a number, he types it in, for example `Ask: 20 Cr` or `Tenure: 24 months`. Either way is fine.
 

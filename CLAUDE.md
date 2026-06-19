@@ -22,10 +22,11 @@ Memory folder: `~/.claude/projects/-Users-devanshasawa-Desktop-initial-portfolio
 initial-portfolio-screener/
 ├── CLAUDE.md                              ← this file
 ├── skill.md                              ← skill manifest + orchestration (the full workflow)
+├── [CompanyName]/                         ← SOURCE docs the user attaches (INPUT, read in place, never moved)
 ├── templates/
 │   ├── Financial Appraisal Template.xlsx  ← P&L, Balance Sheet, Operating Ratios
 │   └── DTNW_Granularities_Template.md     ← skeleton for D/TNW granularities (ageing, haircuts, reclassifications)
-├── companies/                             ← one folder per company screened (visible in Finder)
+├── companies/                             ← OUTPUT only: one folder per company, holds generated artifacts (no source docs)
 │   ├── BananaClubInVogue/                 ← test company (audited FY25+FY24; MIS FY26)
 │   ├── Vananam/                           ← test company (consolidated; Dec'25 MIS + FY25 + FY24)
 │   ├── Monedo/                            ← test company (NBFC)
@@ -84,6 +85,10 @@ Logic: 0 or 1 rules, pass (1 rule, carry as a flag). 2 or 3 rules, reject. Rejec
 ### Excel Template
 - The skill populates the Financial Appraisal Template, then reads auto-calculated ratios back out for Sections 3 to 5.
 - Nandan's proposed investment is NOT included in D/TNW or D/E calculations (pre-disbursement only).
+- **Three failure modes that have actually shipped broken sheets (full detail in `references/template-integration.md` → "Hard-won gotchas"):**
+  1. The blank template carries the previous company's numbers as formulas in the input cells. **Clear all input rows to 0 before writing**, or leftovers corrupt the balance sheet.
+  2. openpyxl writes formulas but does not compute them, so totals / Row 88 check / Operating Ratios sheet are **blank until recalculated**. Set `fullCalcOnLoad`, recalc (LibreOffice headless if available), and verify Row 88 = 0 in the *recomputed cell* — a Python re-sum of your own inputs is not proof the sheet balances.
+  3. Template bug: cell `R82` has a hardcoded `+0.1` that unbalances the adjusted FY25 column by 0.1; raw input columns C–F are unaffected. Services companies (no inventory/COGS) also throw `#DIV/0!` in Inventory/Creditor Days — expected, not a data error.
 
 ### D/TNW Granularities (Section 2 Rule 3, feeds Rule 5 too)
 - The xlsx holds only single net balances. The D/TNW build-up needs detail it cannot store: ageing buckets, provisioning haircuts, CCD/promoter-loan reclassifications, contingent liabilities, fictitious assets. These come only from the latest audited Notes to Accounts (MIS never has them) and are captured in `dtnw_granularities.md` during the template-integration step.
@@ -91,16 +96,17 @@ Logic: 0 or 1 rules, pass (1 rule, carry as a flag). 2 or 3 rules, reject. Rejec
 - Use only the latest audited year's ageing buckets. Receivables turn over, so a prior year cannot second-guess the current-year disclosure.
 - Verify ageing-bucket OCR against the source PDF. A value in the wrong bucket changes the provision, and the result, dramatically.
 
-### Output and Intermediate File Storage
-- Each company gets its own working folder: `companies/[company_name]/`.
-- Files written per analysis:
+### Input vs Output File Storage (critical — keep them separate)
+- **Source documents (INPUT)** live in the folder the user attaches (typically a `[CompanyName]/` folder at the workspace root). Read these **in place**. Never move, copy, rename, or relocate the user's source files, and never move that folder into `companies/`. Leave the source folder exactly as the user left it.
+- **Generated artifacts (OUTPUT)** go to `companies/[company_name]/` and nowhere else. This folder must contain only files this skill produces — no source documents.
+- Files written per analysis (all in `companies/[company_name]/`):
   - `company_structure.md` - short structure overview (from the template-integration step)
   - `dtnw_granularities.md` - D/TNW granularities from the latest audited Notes (skeleton at `templates/DTNW_Granularities_Template.md`)
   - `mis_[period].md` - complete, faithful extract of the MIS P&L (every line item, all periods); feeds Section 1 Rule 3 and Section 4
   - `Financial_Appraisal_[company_name].xlsx` - populated template copy
   - `section0_output.md` to `section6_output.md` - one file per section
   - `report_draft.md` - compiled full markdown report
-  - `[company_name]_Nandan_Screen_[date].docx` - final note (also copied to the source docs folder)
+  - `[company_name]_Nandan_Screen_[date].docx` - final note (stays in `companies/[company_name]/`; do not write back into the source folder unless the user explicitly asks)
 - .docx is generated via `nandan-screener/scripts/generate_report.py` (python-docx, no pandoc), in the black-and-white house style.
 - PDF extraction: targeted pages only, never OCR the entire document.
 - Cash runway: always calculate both scenarios (ST debt refinanced and ST debt fully repaid).
