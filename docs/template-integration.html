@@ -1,0 +1,1243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Template Integration — Nandan Initial Portfolio Screener</title>
+<meta name="description" content="Populating the Financial Appraisal template from the audited PDFs, then reading the calculated ratios back out.">
+<meta property="og:title" content="Template Integration — Nandan Initial Portfolio Screener">
+<meta property="og:description" content="Populating the Financial Appraisal template from the audited PDFs, then reading the calculated ratios back out.">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#128202;</text></svg>">
+
+</head>
+<body>
+<div class="topbar">
+  <button id="menu" aria-label="Open navigation">Menu</button>
+  <span class="t">Nandan Initial Portfolio Screener</span>
+</div>
+<div class="shell">
+  <aside class="side">
+    <a class="brand" href="index.html">
+      <span class="mark">Nandan Initial<br>Portfolio Screener</span>
+      <span class="sub">Screening framework reference</span>
+    </a>
+    <input id="filter" class="filter" type="search" placeholder="Filter sections" aria-label="Filter sections">
+    <nav class="navgroup"><h2>Framework</h2><ul>
+<li><a href="section0-overview.html"><span class="kicker">Section 0</span>Company Overview</a></li>
+<li><a href="section1-rejection.html"><span class="kicker">Section 1</span>Preliminary Rejection</a></li>
+<li><a href="section2-screening.html"><span class="kicker">Section 2</span>Initial Screening</a></li>
+<li><a href="section3-cashflow.html"><span class="kicker">Section 3</span>Cash Flow</a></li>
+<li><a href="section4-pl.html"><span class="kicker">Section 4</span>Profit and Loss</a></li>
+<li><a href="section5-balance-sheet.html"><span class="kicker">Section 5</span>Balance Sheet</a></li>
+<li><a href="section6-debt.html"><span class="kicker">Section 6</span>Debt Structure</a></li>
+</ul></nav>
+<nav class="navgroup"><h2>Process</h2><ul>
+<li><a href="template-integration.html" class="on"><span class="kicker">Process</span>Template Integration</a></li>
+</ul></nav>
+<nav class="navgroup"><h2>Output</h2><ul>
+<li><a href="output-template.html"><span class="kicker">Output</span>Report Template and House Style</a></li>
+</ul></nav>
+    <div class="sidefoot">
+      <button id="theme" type="button">Dark mode</button>
+      <a href="https://github.com/Devanshindian/initial-portfolio-screener">Source on GitHub</a>
+    </div>
+  </aside>
+  <main class="main">
+    
+    <div class="wrap">
+      <div class="doc">
+        <article>
+          <header class="pagehead">
+            <div class="kicker">Process</div>
+            <h1>Financial Appraisal Template — Integration Reference</h1>
+            <p>Populating the Financial Appraisal template from the audited PDFs, then reading the calculated ratios back out.</p>
+            <div class="meta">
+              <span><code>references/template-integration.md</code></span>
+              <span>22 min read</span>
+              <span><a href="https://github.com/Devanshindian/initial-portfolio-screener/blob/main/nandan-screener/references/template-integration.md">View raw markdown</a></span>
+            </div>
+          </header>
+          <div class="md">
+<h1 id="financial-appraisal-template-integration-reference">Financial Appraisal Template — Integration Reference<a class="headerlink" href="#financial-appraisal-template-integration-reference" title="Permanent link">#</a></h1>
+<hr />
+<h2 id="read-this-first">⭐ Read This First<a class="headerlink" href="#read-this-first" title="Permanent link">#</a></h2>
+<p><strong>Use the Opus model for this step.</strong> Precision-critical — one mis-read digit or swapped column breaks the entire balance sheet. Opus handles this reliably; smaller models slip on the traps documented below.</p>
+<p><strong>The shape of this task (internalize before starting):</strong></p>
+<ol>
+<li>Inventory documents → confirm periods, units, audited vs MIS</li>
+<li>Company structure check → save <code>company_structure.md</code></li>
+<li>Extract ALL numbers in one pass (P&amp;L + BS + Notes) → do not re-open PDFs after this</li>
+<li>Write ONE Python script → <strong>clear every input cell first</strong>, then fill all columns (C, D, E, F) in a single run</li>
+<li><strong>Recalculate the workbook, then verify the BS check (Row 88) reads 0 <em>in the actual sheet</em></strong> → fix if non-zero → save</li>
+<li>Write <code>dtnw_granularities.md</code></li>
+</ol>
+<p>One extraction pass → one script → one verification → two markdown outputs. No partial fills, no column-by-column scripts, no re-reading PDFs mid-way.</p>
+<blockquote>
+<p><strong>Hard-won gotchas — read these or you will ship a broken sheet (all of these have actually happened):</strong></p>
+<ol>
+<li><strong>The blank template ships with example data baked into the input cells as formulas</strong> (e.g. <code>=1811.66/100</code> in Inventories, <code>=365.66/100</code> in Investments, <code>/Z1</code> cells from the previous company). openpyxl only overwrites the cells you explicitly set, so any input row you <em>don't</em> write keeps the old example number and silently corrupts the balance sheet. <strong>Always clear the full set of input rows to 0 first, then write your values.</strong> See Phase 4.</li>
+<li><strong>openpyxl does not calculate formulas.</strong> It stores the formula text but writes no result, so after your script the totals, the Row 88 check, and the entire Operating Ratios sheet are <strong>blank</strong> until Excel/LibreOffice recalculates. A Python-side balance check on your own inputs is <strong>not</strong> proof the sheet balances — you must verify the <em>cell's</em> computed value. Recalculate the saved file (LibreOffice headless: <code>soffice --headless --convert-to xlsx --calc ...</code>, or set <code>wb.calculation.fullCalcOnLoad = True</code> / the workbook's <code>calcPr fullCalcOnLoad="1"</code> so Excel recalcs on open) and confirm Row 88 shows 0. If neither is available, tell the user the file must be opened and recalculated in Excel (Cmd+=) before the totals appear.</li>
+<li><strong>Known template bug: cell <code>R82</code> (the FY25 <em>adjusted</em> receivables column) contains a hardcoded <code>+0.1</code></strong> (<code>=D82+I82+0.1</code>). It throws the adjusted-column balance check off by exactly 0.1 Cr for every company. The raw input columns (C–F) are unaffected. Remove the <code>+0.1</code> if you want the adjusted column to balance.</li>
+<li><strong>Pure services companies (no inventory, no COGS) trip <code>#DIV/0!</code> in the Operating Ratios sheet</strong> — Inventory Days and Creditor Days divide by zero purchases/inventory. This is expected, not a data error; note it and read the ratios that do compute.</li>
+<li><strong>Verify the artifact, not just the arithmetic.</strong> Open/inspect what the spreadsheet (and the .docx) actually <em>display</em>, not only what your script intended.</li>
+</ol>
+</blockquote>
+<hr />
+<h2 id="phase-1-document-inventory">Phase 1 — Document Inventory<a class="headerlink" href="#phase-1-document-inventory" title="Permanent link">#</a></h2>
+<p>Before doing anything else, list every file provided and note three things for each:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>What to confirm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Period covered</td>
+<td>e.g. 9M Apr–Dec, or full FY Apr–Mar</td>
+</tr>
+<tr>
+<td>Audited or MIS</td>
+<td>Audited = signed annual report; MIS = management-provided, unaudited</td>
+</tr>
+<tr>
+<td>Unit stated in header</td>
+<td>Rupees / Lakhs / Crores — different files often use different units</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Template uses INR Crores</strong> (<code>Amt in multiples of</code> = 10,000,000). Convert everything before entering.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Stated unit</th>
+<th>Conversion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rupees (₹)</td>
+<td>÷ 1,00,00,000</td>
+</tr>
+<tr>
+<td>Thousands</td>
+<td>÷ 10,000</td>
+</tr>
+<tr>
+<td>Lakhs</td>
+<td>÷ 100</td>
+</tr>
+<tr>
+<td>Millions</td>
+<td>÷ 10</td>
+</tr>
+<tr>
+<td>Crores</td>
+<td>× 1 (no conversion needed)</td>
+</tr>
+<tr>
+<td>10 Crores</td>
+<td>× 10</td>
+</tr>
+</tbody>
+</table></div>
+<p>Convert at extraction time — record Crore values directly. Do not leave conversion to the script.</p>
+<hr />
+<h2 id="phase-2-company-structure-check">Phase 2 — Company Structure Check<a class="headerlink" href="#phase-2-company-structure-check" title="Permanent link">#</a></h2>
+<p>Establish legal and ownership structure before touching any financials. This determines which numbers to use and flags consolidation scope.</p>
+<p><strong>Decision tree:</strong></p>
+<ul>
+<li><strong>Structure document provided</strong> (org chart, shareholding pattern, subsidiary list) → use it directly.</li>
+<li><strong>Not provided</strong> → web search: <code>"[Company name] subsidiaries corporate structure India"</code>. Determine whether the company is a standalone entity, a parent holding company, or a subsidiary.</li>
+</ul>
+<p><strong>Which financials to use:</strong></p>
+<ul>
+<li>Consolidated preferred — state this in the report.</li>
+<li>Only standalone/subsidiary available → proceed, but flag explicitly: <em>"Analysis based on standalone financials only. Consolidated financials not provided."</em></li>
+<li>Both available → use consolidated. Note that standalone was also reviewed.</li>
+</ul>
+<p>Save output to <code>companies/[company_name]/company_structure.md</code> — see Outputs section for exact format.</p>
+<hr />
+<h2 id="phase-3-data-extraction-one-pass-do-not-return">Phase 3 — Data Extraction (One Pass, Do Not Return)<a class="headerlink" href="#phase-3-data-extraction-one-pass-do-not-return" title="Permanent link">#</a></h2>
+<p>Read all PDFs once and extract every value below. Record each figure with its source row/note reference and unit as stated. Do this for ALL documents before writing any code.</p>
+<h3 id="pl-checklist-each-audited-report">P&amp;L Checklist (each audited report)<a class="headerlink" href="#pl-checklist-each-audited-report" title="Permanent link">#</a></h3>
+<ul>
+<li class="task"><input type="checkbox" disabled> Revenue from operations — confirm net or gross of discounts/incentive payouts</li>
+<li class="task"><input type="checkbox" disabled> Other income</li>
+<li class="task"><input type="checkbox" disabled> Purchases of stock-in-trade (or raw material cost for manufacturing)</li>
+<li class="task"><input type="checkbox" disabled> Changes in inventories — sign exactly as shown</li>
+<li class="task"><input type="checkbox" disabled> Employee benefit expenses</li>
+<li class="task"><input type="checkbox" disabled> Finance costs</li>
+<li class="task"><input type="checkbox" disabled> Depreciation and amortisation</li>
+<li class="task"><input type="checkbox" disabled> Other expenses</li>
+<li class="task"><input type="checkbox" disabled> Exceptional items (if any)</li>
+<li class="task"><input type="checkbox" disabled> Profit before tax — verify arithmetic</li>
+<li class="task"><input type="checkbox" disabled> Current tax</li>
+<li class="task"><input type="checkbox" disabled> Deferred tax — positive = expense, negative = credit/income</li>
+<li class="task"><input type="checkbox" disabled> Profit for the year (total, before MI split)</li>
+<li class="task"><input type="checkbox" disabled> Non-controlling interest / minority interest (consolidated only)</li>
+<li class="task"><input type="checkbox" disabled> PAT attributable to equity shareholders (bottom line)</li>
+</ul>
+<h3 id="balance-sheet-checklist-each-audited-report">Balance Sheet Checklist (each audited report)<a class="headerlink" href="#balance-sheet-checklist-each-audited-report" title="Permanent link">#</a></h3>
+<ul>
+<li class="task"><input type="checkbox" disabled> Equity share capital — equity component only</li>
+<li class="task"><input type="checkbox" disabled> Preference share capital / CCPS / OCPS if any — Row 54, not Row 51</li>
+<li class="task"><input type="checkbox" disabled> Reserves and surplus total — all sub-reserves: retained earnings, capital reserve, securities premium, FCTR, OCI, DRR</li>
+<li class="task"><input type="checkbox" disabled> Non-controlling interest (consolidated only)</li>
+<li class="task"><input type="checkbox" disabled> Non-current borrowings — full breakdown from Note if available</li>
+<li class="task"><input type="checkbox" disabled> DTL or DTA net — confirm direction (DTL = positive Row 58, DTA = negative Row 58)</li>
+<li class="task"><input type="checkbox" disabled> Other non-current liabilities</li>
+<li class="task"><input type="checkbox" disabled> Long-term provisions</li>
+<li class="task"><input type="checkbox" disabled> Short-term / current borrowings — full breakdown from Note</li>
+<li class="task"><input type="checkbox" disabled> Trade payables — MSME + others combined</li>
+<li class="task"><input type="checkbox" disabled> Other current liabilities — advances from customers, deferred revenue, statutory dues</li>
+<li class="task"><input type="checkbox" disabled> Short-term provisions</li>
+<li class="task"><input type="checkbox" disabled> PPE net block</li>
+<li class="task"><input type="checkbox" disabled> Intangible assets net block</li>
+<li class="task"><input type="checkbox" disabled> CWIP</li>
+<li class="task"><input type="checkbox" disabled> Intangibles under development</li>
+<li class="task"><input type="checkbox" disabled> Non-current investments</li>
+<li class="task"><input type="checkbox" disabled> Other non-current assets — check if any FDs &gt; 12M are buried here</li>
+<li class="task"><input type="checkbox" disabled> Inventories</li>
+<li class="task"><input type="checkbox" disabled> Trade receivables — net of allowance for doubtful debts</li>
+<li class="task"><input type="checkbox" disabled> Cash and cash equivalents — check Note for breakdown; move FDs &gt; 12M to Row 77</li>
+<li class="task"><input type="checkbox" disabled> Other current assets — advances to vendors, prepaid, statutory balances</li>
+</ul>
+<h3 id="notes-to-accounts-checklist-latest-audited-report-only-for-dtnw_granularitiesmd">Notes to Accounts Checklist (latest audited report only — for <code>dtnw_granularities.md</code>)<a class="headerlink" href="#notes-to-accounts-checklist-latest-audited-report-only-for-dtnw_granularitiesmd" title="Permanent link">#</a></h3>
+<p>These do NOT go in the template. Capture in the same reading pass, write to the second output file.</p>
+<ul>
+<li class="task"><input type="checkbox" disabled> Trade receivables ageing schedule — buckets: Not Due / &lt;6m / 6m–1yr / 1–2yr / 2–3yr / &gt;3yr. Verify OCR column alignment carefully.</li>
+<li class="task"><input type="checkbox" disabled> Inventory ageing schedule if disclosed — often absent (Schedule III does not mandate it); flag if missing</li>
+<li class="task"><input type="checkbox" disabled> Contingent liabilities and commitments — note whether any are likely to crystallise</li>
+<li class="task"><input type="checkbox" disabled> Promoter / director subordinated loans — identify within borrowings / related-party notes</li>
+<li class="task"><input type="checkbox" disabled> CCDs or other compulsorily-convertible instruments</li>
+<li class="task"><input type="checkbox" disabled> Other capitalised / fictitious assets — preliminary and pre-incorporation expenses, deferred revenue expenditure, misc. expenditure not written off</li>
+<li class="task"><input type="checkbox" disabled> Segment / vertical-wise revenue split if a segment note exists</li>
+<li class="task"><input type="checkbox" disabled> Actual tax paid and actual capex (additions) from the cash flow statement</li>
+</ul>
+<h3 id="mis-checklist">MIS Checklist<a class="headerlink" href="#mis-checklist" title="Permanent link">#</a></h3>
+<ul>
+<li class="task"><input type="checkbox" disabled> All available P&amp;L lines — missing lines are fine, set to 0</li>
+<li class="task"><input type="checkbox" disabled> All available BS lines</li>
+<li class="task"><input type="checkbox" disabled> Period covered — enter in Row 7</li>
+<li class="task"><input type="checkbox" disabled> Note any line where MIS label differs from standard — flag in report</li>
+</ul>
+<h3 id="mis-extract-save-to-file">MIS Extract — Save to File<a class="headerlink" href="#mis-extract-save-to-file" title="Permanent link">#</a></h3>
+<p>After extracting MIS data, write a complete faithful markdown copy of the MIS P&amp;L to <code>companies/[company_name]/mis_[period].md</code> — every line item (all opex sub-lines, all period columns, and totals), preserving source figures exactly. Do not trim or summarise. Note the period covered (monthly vs annual) and the unit. Later sections depend on the granular lines (Section 1 Rule 3 unit economics; Section 4 margin waterfall).</p>
+<hr />
+<h2 id="phase-4-fill-the-template-one-script">Phase 4 — Fill the Template (One Script)<a class="headerlink" href="#phase-4-fill-the-template-one-script" title="Permanent link">#</a></h2>
+<p><strong>Template file:</strong> <code>/Users/devanshasawa/Desktop/initial portfolio screener/templates/Financial Appraisal Template.xlsx</code></p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Sheet</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Info and Adjustments</code></td>
+<td>Primary input sheet — enter all P&amp;L and Balance Sheet data here</td>
+</tr>
+<tr>
+<td><code>Operating ratios</code></td>
+<td>Auto-calculated output — ratios, margins, leverage, efficiency</td>
+</tr>
+<tr>
+<td><code>Cash position estimation</code></td>
+<td>Auto-calculated — cash runway under different scenarios</td>
+</tr>
+<tr>
+<td><code>Sheet1 / Sheet2</code></td>
+<td>Scratch / unused</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Only populate <code>Info and Adjustments</code>. All other sheets read from it.</strong></p>
+<hr />
+<h3 id="script-structure">Script Structure<a class="headerlink" href="#script-structure" title="Permanent link">#</a></h3>
+<p>Write a single Python script (openpyxl) that fills ALL columns in one execution:</p>
+<ol>
+<li>Copy blank template to <code>companies/[company_name]/Financial_Appraisal_[company_name].xlsx</code></li>
+<li><strong>Clear every input cell first.</strong> Set the full list of input rows (P&amp;L: 11,12,14,18,19,20,21,22,23,24,25,28,30,31,34,36,37,42,43,45,46; BS: 51,52,53,54,55,57,58,59,60,62,63,64,65,70,71,72,73,75,76,77,80,81,82,83,84,85; plus 90,93,94,97,98) to 0 across columns C–F. Do NOT touch the aggregator/formula rows (13,15,17,26,27,29,32,33,35,38,49,50,56,61,66,68,74,78,86,87,88 and the capital-account / cash-flow blocks 100–139). This wipes the template's leftover example data.</li>
+<li>Fill header rows (1–7) for each column</li>
+<li>Fill all P&amp;L input rows for each column (leave 29 PBT and 35 PAT as the template's formulas — verify they reproduce the audited PBT/PAT rather than hardcoding them)</li>
+<li>Fill all BS input rows for each column</li>
+<li>Set <code>wb.calculation.fullCalcOnLoad = True</code> so Excel recalculates on open</li>
+<li>Save, then <strong>recalculate and verify Row 88 = 0 in the recomputed cell</strong> (not just in your own Python sum)</li>
+</ol>
+<p>Enter each figure as <code>raw_value / divisor</code> (e.g. <code>71_99_25_02_630/1e7</code>), not a hand-rounded decimal. This avoids decimal slips and keeps the BS check at exactly 0.</p>
+<hr />
+<h3 id="column-layout">Column Layout<a class="headerlink" href="#column-layout" title="Permanent link">#</a></h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Template Column</th>
+<th>Content</th>
+<th>Row 6 marker</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Col C</td>
+<td>Provisional / MIS (latest period, may be 9M or 12M)</td>
+<td>"P"</td>
+</tr>
+<tr>
+<td>Col D</td>
+<td>Latest audited FY (e.g. FY25 = Mar 2025)</td>
+<td>"A"</td>
+</tr>
+<tr>
+<td>Col E</td>
+<td>Prior audited FY (e.g. FY24 = Mar 2024)</td>
+<td>"A"</td>
+</tr>
+<tr>
+<td>Col F</td>
+<td>FY-2 audited (e.g. FY23 = Mar 2023)</td>
+<td>"A" if available</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h3 id="header-rows-fill-for-each-column">Header Rows (fill for each column)<a class="headerlink" href="#header-rows-fill-for-each-column" title="Permanent link">#</a></h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Row</th>
+<th>Label</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Company name</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Standalone / Consolidated</td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Type of Company</td>
+<td>Pvt / Ltd / LLP</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Amt in multiples of</td>
+<td>LEAVE — always <code>=10^7</code>, do not change</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Year ended (date)</td>
+<td><code>date(YYYY,M,D)</code>. Audited = FY-end (31 Mar). MIS = period-end date (e.g. 31 Dec 2025)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Audited / Provisional</td>
+<td>"A" for audited, "P" for MIS</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Period (months)</td>
+<td>12 for full year, 9 for Apr–Dec MIS</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h3 id="quick-reference-all-input-rows">Quick Reference — All Input Rows<a class="headerlink" href="#quick-reference-all-input-rows" title="Permanent link">#</a></h3>
+<p>AUTO = formula cell, never touch.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Row</th>
+<th>Label</th>
+<th>Fill?</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>P&amp;L</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>11</td>
+<td>Revenue from Operations</td>
+<td>YES</td>
+<td>Enter NET figure — after discounts / incentive payouts</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Less: Excise/GST</td>
+<td>YES</td>
+<td>Usually 0 for post-GST companies</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Revenue Net</td>
+<td>AUTO</td>
+<td></td>
+</tr>
+<tr>
+<td>14</td>
+<td>Other Income</td>
+<td>YES</td>
+<td></td>
+</tr>
+<tr>
+<td>15</td>
+<td>Total Revenue</td>
+<td>AUTO</td>
+<td></td>
+</tr>
+<tr>
+<td>18</td>
+<td>Purchase of Stock in Trade / RM</td>
+<td>YES</td>
+<td>See business-type table below</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Changes in Inventories</td>
+<td>YES</td>
+<td>Negative = inventory increased</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Direct Expenses</td>
+<td>YES</td>
+<td></td>
+</tr>
+<tr>
+<td>21</td>
+<td>Changes in Inventories (legacy)</td>
+<td>LEAVE BLANK</td>
+<td>Unused legacy row — always 0</td>
+</tr>
+<tr>
+<td>22</td>
+<td>Employee Benefit Expenses</td>
+<td>YES</td>
+<td></td>
+</tr>
+<tr>
+<td>23</td>
+<td>Finance Costs</td>
+<td>YES</td>
+<td>Do not double-count in Row 25</td>
+</tr>
+<tr>
+<td>24</td>
+<td>Depreciation and Amortisation</td>
+<td>YES</td>
+<td></td>
+</tr>
+<tr>
+<td>25</td>
+<td>Other Expenses</td>
+<td>YES</td>
+<td>All other operating expenses</td>
+</tr>
+<tr>
+<td>26</td>
+<td>Total Expenses</td>
+<td>AUTO</td>
+<td></td>
+</tr>
+<tr>
+<td>27</td>
+<td>Profit Before Exceptional Items</td>
+<td>AUTO</td>
+<td></td>
+</tr>
+<tr>
+<td>28</td>
+<td>Exceptional Items</td>
+<td>YES</td>
+<td>0 if none</td>
+</tr>
+<tr>
+<td>29</td>
+<td>Profit Before Tax</td>
+<td>YES</td>
+<td>Enter from P&L; verify = Row 27 ± Row 28</td>
+</tr>
+<tr>
+<td>30</td>
+<td>Current Tax</td>
+<td>YES</td>
+<td>Current year charge only — no deferred tax here</td>
+</tr>
+<tr>
+<td>31</td>
+<td>Deferred Tax</td>
+<td>YES</td>
+<td>Negative = credit (deferred tax income)</td>
+</tr>
+<tr>
+<td>32</td>
+<td>Total Tax</td>
+<td>AUTO</td>
+<td></td>
+</tr>
+<tr>
+<td>33</td>
+<td>PAT Before Extraordinary</td>
+<td>AUTO</td>
+<td></td>
+</tr>
+<tr>
+<td>35</td>
+<td>Profit/Loss for the Period</td>
+<td>YES</td>
+<td>"Profit for the year" from P&amp;L</td>
+</tr>
+<tr>
+<td>36</td>
+<td>Minority Interest</td>
+<td>YES</td>
+<td>Enter as shown — may be + or −</td>
+</tr>
+<tr>
+<td>37</td>
+<td>Share of Profit/Loss of Associates</td>
+<td>YES</td>
+<td>0 if none</td>
+</tr>
+<tr>
+<td>38</td>
+<td>Consolidated PAT After MI</td>
+<td>YES</td>
+<td>Bottom-line attributable to equity shareholders</td>
+</tr>
+<tr>
+<td><strong>BS — Equity &amp; Liabilities</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>51</td>
+<td>Equity Share Capital</td>
+<td>YES</td>
+<td>Equity component ONLY — no preference shares</td>
+</tr>
+<tr>
+<td>52</td>
+<td>Quasi Equity (CCDs)</td>
+<td>YES</td>
+<td>Compulsorily Convertible Debentures only</td>
+</tr>
+<tr>
+<td>53</td>
+<td>Reserves and Surplus</td>
+<td>YES</td>
+<td>All reserves incl. FCTR, OCI, securities premium</td>
+</tr>
+<tr>
+<td>54</td>
+<td>Share Application Money</td>
+<td>YES</td>
+<td>CCPS, OCPS, warrants — equity-like instruments</td>
+</tr>
+<tr>
+<td>55</td>
+<td>Minority Interest</td>
+<td>YES</td>
+<td>Positive number (consolidated BS only)</td>
+</tr>
+<tr>
+<td>56</td>
+<td>Non-Current Liabilities total</td>
+<td>AUTO</td>
+<td></td>
+</tr>
+<tr>
+<td>57</td>
+<td>Long Term Borrowings</td>
+<td>YES</td>
+<td>Non-current portion only</td>
+</tr>
+<tr>
+<td>58</td>
+<td>Deferred Tax Liabilities [Net]</td>
+<td>YES</td>
+<td>DTL = positive; DTA = negative</td>
+</tr>
+<tr>
+<td>59</td>
+<td>Other Long Term Liabilities</td>
+<td>YES</td>
+<td>0 if none</td>
+</tr>
+<tr>
+<td>60</td>
+<td>Long Term Provisions</td>
+<td>YES</td>
+<td></td>
+</tr>
+<tr>
+<td>61</td>
+<td>Current Liabilities total</td>
+<td>AUTO</td>
+<td></td>
+</tr>
+<tr>
+<td>62</td>
+<td>Short Term Borrowings</td>
+<td>YES</td>
+<td>OD, WC loans, current portion of LT debt</td>
+</tr>
+<tr>
+<td>63</td>
+<td>Trade Payables</td>
+<td>YES</td>
+<td>MSME + others combined</td>
+</tr>
+<tr>
+<td>64</td>
+<td>Other Current Liabilities</td>
+<td>YES</td>
+<td>Advances from customers, statutory dues, deferred revenue. Also fold in any separate "Other Financial Liabilities" line</td>
+</tr>
+<tr>
+<td>65</td>
+<td>Short Term Provisions</td>
+<td>YES</td>
+<td></td>
+</tr>
+<tr>
+<td>66</td>
+<td>Total Capital and Liabilities</td>
+<td>AUTO</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>BS — Assets</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>70</td>
+<td>Tangible + RoU Assets</td>
+<td>YES</td>
+<td>Net block after depreciation; add RoU separately if shown</td>
+</tr>
+<tr>
+<td>71</td>
+<td>Intangible Assets</td>
+<td>YES</td>
+<td>Net block after amortisation</td>
+</tr>
+<tr>
+<td>72</td>
+<td>Capital Work-in-Progress</td>
+<td>YES</td>
+<td></td>
+</tr>
+<tr>
+<td>73</td>
+<td>Intangibles Under Development</td>
+<td>YES</td>
+<td></td>
+</tr>
+<tr>
+<td>75</td>
+<td>Non-Current Investments</td>
+<td>YES</td>
+<td></td>
+</tr>
+<tr>
+<td>76</td>
+<td>Long Term Loans and Advances</td>
+<td>YES</td>
+<td></td>
+</tr>
+<tr>
+<td>77</td>
+<td>Other Non-Current Assets</td>
+<td>YES</td>
+<td>Incl. FDs &gt; 12 months. Do NOT include DTA if already entered as negative in Row 58</td>
+</tr>
+<tr>
+<td>78</td>
+<td>Total Non-Current Assets</td>
+<td>AUTO</td>
+<td></td>
+</tr>
+<tr>
+<td>80</td>
+<td>Current Investments</td>
+<td>YES</td>
+<td></td>
+</tr>
+<tr>
+<td>81</td>
+<td>Inventories</td>
+<td>YES</td>
+<td></td>
+</tr>
+<tr>
+<td>82</td>
+<td>Trade Receivables</td>
+<td>YES</td>
+<td>Net of allowance</td>
+</tr>
+<tr>
+<td>83</td>
+<td>Cash and Cash Equivalents</td>
+<td>YES</td>
+<td>Free cash + FDs &lt; 12M only. FDs &gt; 12M go in Row 77</td>
+</tr>
+<tr>
+<td>84</td>
+<td>Short Term Loans and Advances</td>
+<td>YES</td>
+<td></td>
+</tr>
+<tr>
+<td>85</td>
+<td>Other Current Assets</td>
+<td>YES</td>
+<td></td>
+</tr>
+<tr>
+<td>86</td>
+<td>Total Current Assets</td>
+<td>AUTO</td>
+<td></td>
+</tr>
+<tr>
+<td>87</td>
+<td>Total Assets</td>
+<td>AUTO</td>
+<td></td>
+</tr>
+<tr>
+<td>88</td>
+<td><strong>BS Check</strong></td>
+<td>AUTO</td>
+<td>Must = 0. Non-zero = something is wrong</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h3 id="rows-1820-by-business-type">Rows 18–20 by Business Type<a class="headerlink" href="#rows-1820-by-business-type" title="Permanent link">#</a></h3>
+<p>Identify business type before filling these rows.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Business Type</th>
+<th>Row 18</th>
+<th>Row 19</th>
+<th>Row 20</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Trading</strong></td>
+<td>Purchases of stock-in-trade</td>
+<td>Changes in inventories of stock-in-trade</td>
+<td>0</td>
+</tr>
+<tr>
+<td><strong>Manufacturing</strong></td>
+<td>Raw material purchases</td>
+<td>Changes in ALL inventory: RM + WIP + finished goods combined</td>
+<td>Direct manufacturing costs (power, contract labour, consumables)</td>
+</tr>
+<tr>
+<td><strong>Services</strong></td>
+<td>0</td>
+<td>0</td>
+<td>0 — all costs flow through Rows 22 and 25</td>
+</tr>
+</tbody>
+</table></div>
+<p>For <strong>mixed companies</strong>: split as best as possible. If breakdown unavailable, put combined cost in the most appropriate row and flag it.</p>
+<hr />
+<h3 id="pl-line-item-mapping">P&amp;L Line-Item Mapping<a class="headerlink" href="#pl-line-item-mapping" title="Permanent link">#</a></h3>
+<blockquote>
+<p><strong>Source note:</strong> India FY runs Apr 1 – Mar 31. "FY25" = year ended 31 March 2025. The latest annual report (e.g. March 2025 PDF) contains two years: FY25 and FY24.</p>
+</blockquote>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Row</th>
+<th>Template Label</th>
+<th>Source in PDF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>11</td>
+<td>Revenue From Operations (Gross)</td>
+<td>P&amp;L → "Revenue from operations" — use NET after discounts/incentive payouts</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Less: Excise/GST</td>
+<td>Only fill if revenue is reported gross of GST; usually nil post-GST</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Other Income</td>
+<td>P&amp;L → "Other income"</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Purchase of Stock in Trade</td>
+<td>P&amp;L → "Purchases of Stock-in-trade"</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Changes in Inventories</td>
+<td>P&amp;L → "Changes in inventories" — enter exactly as shown</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Direct Expenses</td>
+<td>P&amp;L → Direct cost line if any; often nil for pure trading</td>
+</tr>
+<tr>
+<td>22</td>
+<td>Employee Benefit Expenses</td>
+<td>P&amp;L → "Employee benefits expense"</td>
+</tr>
+<tr>
+<td>23</td>
+<td>Finance Costs</td>
+<td>P&amp;L → "Finance costs" — do not double-count in Row 25</td>
+</tr>
+<tr>
+<td>24</td>
+<td>Depreciation And Amortisation</td>
+<td>P&amp;L → "Depreciation and amortization expense"</td>
+</tr>
+<tr>
+<td>25</td>
+<td>Other Expenses</td>
+<td>P&amp;L → "Other expenses"</td>
+</tr>
+<tr>
+<td>28</td>
+<td>Exceptional Items</td>
+<td>P&amp;L → "Exceptional items" if explicitly disclosed</td>
+</tr>
+<tr>
+<td>29</td>
+<td>Profit/Loss Before Tax</td>
+<td>P&amp;L → "Profit before tax" — verify = Row 27 ± Row 28</td>
+</tr>
+<tr>
+<td>30</td>
+<td>Current Tax</td>
+<td>Current year charge + any prior year adjustment. No deferred tax here</td>
+</tr>
+<tr>
+<td>31</td>
+<td>Deferred Tax</td>
+<td>P&amp;L → "Deferred Tax Credit / (Expense)" — negative = credit</td>
+</tr>
+<tr>
+<td>35</td>
+<td>Profit/Loss For The Period</td>
+<td>P&amp;L → "Profit for the year"</td>
+</tr>
+<tr>
+<td>36</td>
+<td>Minority Interest</td>
+<td>Consolidated only — enter as negative if deduction from profit</td>
+</tr>
+<tr>
+<td>37</td>
+<td>Share Of Profit/Loss Of Associates</td>
+<td>Negative if a loss</td>
+</tr>
+<tr>
+<td>38</td>
+<td>Consolidated PAT After MI</td>
+<td>Cross-check: should = Row 35 + Row 36 + Row 37</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h3 id="balance-sheet-line-item-mapping">Balance Sheet Line-Item Mapping<a class="headerlink" href="#balance-sheet-line-item-mapping" title="Permanent link">#</a></h3>
+<p><strong>Equity and Liabilities</strong></p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Row</th>
+<th>Template Label</th>
+<th>Source in PDF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>51</td>
+<td>Equity Share Capital</td>
+<td>BS → "Share capital" → equity component only</td>
+</tr>
+<tr>
+<td>52</td>
+<td>Quasi Equity (CCDs)</td>
+<td>CCDs if shown separately</td>
+</tr>
+<tr>
+<td>53</td>
+<td>Reserves and Surplus</td>
+<td>BS → "Reserves and surplus" — all sub-reserves</td>
+</tr>
+<tr>
+<td>54</td>
+<td>Share Application Money</td>
+<td>CCPS/OCPS, warrants, share application money — equity-like instruments</td>
+</tr>
+<tr>
+<td>55</td>
+<td>Minority Interest</td>
+<td>BS → Minority interest (consolidated only) — positive number</td>
+</tr>
+<tr>
+<td>57</td>
+<td>Long Term Borrowings</td>
+<td>Non-current liabilities → "Long-term borrowings"</td>
+</tr>
+<tr>
+<td>58</td>
+<td>Deferred Tax Liabilities [Net]</td>
+<td>Net DTA → negative; net DTL → positive</td>
+</tr>
+<tr>
+<td>59</td>
+<td>Other Long Term Liabilities</td>
+<td>Non-current liabilities → "Other long term liabilities"</td>
+</tr>
+<tr>
+<td>60</td>
+<td>Long Term Provisions</td>
+<td>Non-current liabilities → "Long-term provisions"</td>
+</tr>
+<tr>
+<td>62</td>
+<td>Short Term Borrowings</td>
+<td>Current liabilities → "Short-term borrowings" — OD, WC loans, bill discounting, current portion of LT debt</td>
+</tr>
+<tr>
+<td>63</td>
+<td>Trade Payables</td>
+<td>MSME dues + other creditor dues combined</td>
+</tr>
+<tr>
+<td>64</td>
+<td>Other Current Liabilities</td>
+<td>"Other current liabilities" + any separate "Other Financial Liabilities" (salary payable, accruals)</td>
+</tr>
+<tr>
+<td>65</td>
+<td>Short Term Provisions</td>
+<td>Current liabilities → "Short-term provisions"</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Assets</strong></p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Row</th>
+<th>Template Label</th>
+<th>Source in PDF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>70</td>
+<td>Tangible + Right of Use Assets</td>
+<td>PPE net block + RoU assets</td>
+</tr>
+<tr>
+<td>71</td>
+<td>Intangible Assets</td>
+<td>Net block after amortisation</td>
+</tr>
+<tr>
+<td>72</td>
+<td>Capital Work-In-Progress</td>
+<td>BS → "Capital work-in-progress"</td>
+</tr>
+<tr>
+<td>73</td>
+<td>Intangibles Under Development</td>
+<td>BS → "Intangible assets under development"</td>
+</tr>
+<tr>
+<td>75</td>
+<td>Non-Current Investments</td>
+<td>BS → "Non-current investments"</td>
+</tr>
+<tr>
+<td>76</td>
+<td>Long Term Loans And Advances</td>
+<td>Non-current assets → "Long-term loans and advances"</td>
+</tr>
+<tr>
+<td>77</td>
+<td>Other Non-Current Assets</td>
+<td>"Other non-current assets" + bank FDs &gt; 12M. Do NOT include DTA if already in Row 58</td>
+</tr>
+<tr>
+<td>80</td>
+<td>Current Investments</td>
+<td>BS → "Current investments"</td>
+</tr>
+<tr>
+<td>81</td>
+<td>Inventories</td>
+<td>BS → "Inventories"</td>
+</tr>
+<tr>
+<td>82</td>
+<td>Trade Receivables</td>
+<td>Net of allowance for doubtful debts</td>
+</tr>
+<tr>
+<td>83</td>
+<td>Cash And Cash Equivalents</td>
+<td>Free cash + FDs &lt; 12M only</td>
+</tr>
+<tr>
+<td>84</td>
+<td>Short Term Loans And Advances</td>
+<td>Current assets → "Short-term loans and advances"</td>
+</tr>
+<tr>
+<td>85</td>
+<td>Other Current Assets</td>
+<td>BS → "Other current assets"</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h3 id="structural-complexity-watch-for-these-while-filling">Structural Complexity — Watch for These While Filling<a class="headerlink" href="#structural-complexity-watch-for-these-while-filling" title="Permanent link">#</a></h3>
+<p><strong>Revenue with gross-to-net adjustments</strong>
+Some companies show gross revenue then subtract "Customer Incentive Payouts," "Discounts," or "Rebates" within Revenue from Operations. Use the NET figure in Row 11. Do not put gross in Row 11 and deductions in Row 12 — Row 12 is for GST/excise only.</p>
+<p><strong>CCPS / OCPS / preference shares</strong>
+Convertible preference shares are classified as equity in Indian BS. Face value → Row 54. Securities premium from allotment → Row 53. Row 51 is for paid-up equity share capital only. Extremely common in venture-backed companies.</p>
+<p><strong>Non-controlling interest (NCI)</strong>
+For consolidated financials: NCI appears in both the BS (Row 55, positive) and P&amp;L (Row 36, enter exactly as shown — may be very small or zero). Do not confuse the two.</p>
+<p><strong>Foreign Currency Translation Reserve (FCTR)</strong>
+FCTR sits inside "Other Equity" in the BS. Include it in the Row 53 total — do not show it separately.</p>
+<p><strong>TRS Voucher Liability / Advance from customers / Deferred revenue</strong>
+These are liabilities to customers. They go in Row 64 (Other Current Liabilities). Common in reward voucher, SaaS, and advance-booking businesses. Can be very large — do not confuse with trade payables.</p>
+<p><strong>Convertible instruments in non-current borrowings</strong>
+OCPS classified as financial liabilities (not equity) appear in Non-Current Borrowings → Row 57. Separate from CCPS/OCPS classified as equity (Row 54). Classification depends on conversion terms — check the Note.</p>
+<p><strong>Bank overdraft</strong>
+Bank OD always goes in Row 62 (Short Term Borrowings), regardless of size.</p>
+<p><strong>Disinvestment / hive-out of subsidiaries mid-year</strong>
+BS closing figures already reflect the removal. No adjustment needed, but flag it in the report — it distorts year-on-year comparisons.</p>
+<hr />
+<h3 id="common-pitfalls">Common Pitfalls<a class="headerlink" href="#common-pitfalls" title="Permanent link">#</a></h3>
+<p><strong>Brackets mean negative</strong> — Indian statements show negatives in brackets: <code>(1,274)</code> = −1,274. Enter as negative. Applies most to inventory changes, deferred tax credits, and losses.</p>
+<p><strong>DTA double-counting</strong> — If DTA appears as a non-current asset in the BS, enter it as negative in Row 58 only. Do NOT also include it in Row 77. Side-effect: template's Total Assets will be lower than the audited BS headline by exactly the DTA amount. This is correct — the BS check will still = 0.</p>
+<p><strong>Row 21 is unused</strong> — Legacy row with no formula. Always leave blank.</p>
+<p><strong>CCCPS go in Row 54, not Row 51</strong> — Very common in venture-backed companies. Despite being called "preference shares," they are economically equity-like. Row 51 is strictly for paid-up equity share capital.</p>
+<hr />
+<h3 id="mis-filling-key-differences">MIS Filling — Key Differences<a class="headerlink" href="#mis-filling-key-differences" title="Permanent link">#</a></h3>
+<ul>
+<li><strong>No standard format</strong> — labels, detail, and what's shown varies by company. Do not assume labels mean the same thing across companies.</li>
+<li><strong>No Notes to Accounts</strong> — borrowing schedules, debtor ageing, etc. are not available. Use whatever is given; flag gaps.</li>
+<li><strong>Partial data is expected</strong> — set unavailable rows to 0 and flag. Do not guess or fabricate.</li>
+<li><strong>Flag mixed sources</strong> — when any MIS figure is used alongside an audited figure, note: <em>"Mixed source: MIS [period] + Audited FY[X]"</em></li>
+<li><strong>BS check still applies</strong> — Row 88 = 0 must hold for MIS columns too.</li>
+</ul>
+<hr />
+<h2 id="phase-5-verification">Phase 5 — Verification<a class="headerlink" href="#phase-5-verification" title="Permanent link">#</a></h2>
+<p>Run the script once. Then verify:</p>
+<p><strong>1. BS Check (Row 88)</strong>
+<code>Total Assets − Total Capital and Liabilities</code> must = 0 for every column. Non-zero = a line item is missing or mis-mapped. Identify the gap, fix in the script, re-run. <strong>Check the recalculated cell value, not a Python re-sum of your own inputs</strong> — those can agree while the actual sheet shows blanks (un-recalculated) or a non-zero (leftover example data in an input row you didn't clear). If the cells are blank, the workbook has not been recalculated yet (see gotcha 2 at the top of this file).</p>
+<p><strong>2. Column-order swap trap (critical for MIS/provisional)</strong>
+A provisional PDF's extracted text often has its two columns swapped. Because both periods belong to the same entity, a swap still balances — the BS check will NOT catch it. Verify before trusting any MIS figure: match the document's prior-year column against an audited figure you already have (e.g. PPE, total assets). If it matches, the other column is the current MIS period. If it doesn't match, the columns are swapped — flip them.</p>
+<p><strong>3. Revenue cross-check</strong>
+Revenue note detail should sum to the P&amp;L revenue line.</p>
+<p><strong>4. Finance costs cross-check</strong>
+Finance costs note total should match Row 23.</p>
+<p><strong>5. Capital account working (Rows 100–111)</strong>
+Opening equity + PAT + new infusion = closing equity. Cross-check against share capital and reserves notes.</p>
+<p><strong>6. Operating Ratios sheet</strong>
+Scan for any <code>#DIV/0!</code> or <code>#REF!</code> errors — a required input is missing. Trace back and fix.</p>
+<hr />
+<h2 id="phase-6-dtnw-granularities-dtnw_granularitiesmd">Phase 6 — D/TNW Granularities (<code>dtnw_granularities.md</code>)<a class="headerlink" href="#phase-6-dtnw-granularities-dtnw_granularitiesmd" title="Permanent link">#</a></h2>
+<p>The template stores only single balances. Nandan's D/TNW check (Section 2, Rule 3) needs the detail behind them. This file captures it.</p>
+<p><strong>What goes here (not in the template):</strong></p>
+<ul>
+<li>Trade receivables ageing buckets + provisioning haircuts: Debtors 180–365d × 75%, &gt;365d × 100%</li>
+<li>Inventory ageing buckets + provisioning haircuts: Inventory 180–365d × 40% (20% women's ethnic wear), &gt;365d × 75% (40% women's ethnic wear)</li>
+<li>CCDs and promoter subordinated loans → reclassified from debt to quasi-equity (added to TNW, subtracted from Total Debt)</li>
+<li>Fictitious/soft assets: intangibles, intangibles-under-development, DTA, preliminary/pre-incorporation expenses → subtracted from TNW</li>
+<li>Contingent liabilities likely to crystallise → added to Total Debt</li>
+</ul>
+<p><strong>How to produce it:</strong></p>
+<ol>
+<li>Use <code>templates/DTNW_Granularities_Template.md</code> as the skeleton.</li>
+<li>Fill from the <strong>latest audited report only</strong> — state the FY. Convert to INR Crores.</li>
+<li>Verify each figure against the source PDF, especially debtor-ageing column alignment — a value in the wrong bucket changes the provision dramatically.</li>
+<li>Where a schedule is absent or judgment is needed, flag explicitly rather than guessing.</li>
+<li><strong>Apply haircuts, never waive them.</strong> If a balance falls in a bucket that triggers a provision, apply it and flag for verification. Do not set to zero "pending verification." If the haircut produces negative TNW, that is the finding — surface it, do not soften the rule.</li>
+<li>Use only the latest audited year's ageing — prior year cannot override current-year disclosure.</li>
+<li>Save to <code>companies/[company_name]/dtnw_granularities.md</code>.</li>
+</ol>
+<p>This file feeds Section 2 Rule 3 (D/TNW), Rule 5 (debtors &gt; 180 days), and revenue quality in Section 5.</p>
+<hr />
+<h2 id="outputs">Outputs<a class="headerlink" href="#outputs" title="Permanent link">#</a></h2>
+<p>Three files written to <code>companies/[company_name]/</code> at the end of this step:</p>
+<h3 id="1-company_structuremd">1. <code>company_structure.md</code><a class="headerlink" href="#1-company_structuremd" title="Permanent link">#</a></h3>
+<p>2–4 sentence overview of legal and ownership structure. Must include:</p>
+<ul>
+<li>Standalone, parent holding company, or subsidiary</li>
+<li>Key subsidiaries (if any) and business they cover</li>
+<li>Whether consolidated or standalone financials were used</li>
+<li>Any structural flag (e.g. "Consolidated financials not provided — analysis based on standalone only")</li>
+</ul>
+<p><strong>Format:</strong></p>
+<pre><code>[Company Name] is a [Pvt Ltd / Public Ltd] company incorporated in India, operating as [parent / standalone / subsidiary of X].
+It operates through [N] subsidiaries covering [brief description of verticals].
+This analysis uses [consolidated / standalone] financials for FY[X] and FY[X-1].
+[Flag if applicable.]
+</code></pre>
+<h3 id="2-financial_appraisal_company_namexlsx">2. <code>Financial_Appraisal_[company_name].xlsx</code><a class="headerlink" href="#2-financial_appraisal_company_namexlsx" title="Permanent link">#</a></h3>
+<p>Populated Financial Appraisal Template. The Operating Ratios sheet in this file is the source for all ratio inputs used in Sections 3–5. Refer back to this file — do not re-read source PDFs during those sections.</p>
+<h3 id="3-dtnw_granularitiesmd">3. <code>dtnw_granularities.md</code><a class="headerlink" href="#3-dtnw_granularitiesmd" title="Permanent link">#</a></h3>
+<p>D/TNW granularity sheet filled from the latest audited report using <code>templates/DTNW_Granularities_Template.md</code>. Captures ageing buckets, provisioning haircuts, CCD/promoter-loan reclassifications, contingent liabilities, and fictitious assets. Source for Section 2 Rule 3 and Rule 5.</p>
+          </div>
+          <nav class="pager"><a class="prev" href="section6-debt.html"><span class="lbl">Previous</span><span class="ttl">Debt Structure</span></a><a class="next" href="output-template.html"><span class="lbl">Next</span><span class="ttl">Report Template and House Style</span></a></nav>
+        </article>
+        <aside class="toc">
+          <div class="h">On this page</div>
+          <div class="toc">
+<ul>
+<li><a href="#read-this-first">⭐ Read This First</a></li>
+<li><a href="#phase-1-document-inventory">Phase 1 — Document Inventory</a></li>
+<li><a href="#phase-2-company-structure-check">Phase 2 — Company Structure Check</a></li>
+<li><a href="#phase-3-data-extraction-one-pass-do-not-return">Phase 3 — Data Extraction (One Pass, Do Not Return)</a><ul>
+<li><a href="#pl-checklist-each-audited-report">P&amp;L Checklist (each audited report)</a></li>
+<li><a href="#balance-sheet-checklist-each-audited-report">Balance Sheet Checklist (each audited report)</a></li>
+<li><a href="#notes-to-accounts-checklist-latest-audited-report-only-for-dtnw_granularitiesmd">Notes to Accounts Checklist (latest audited report only — for dtnw_granularities.md)</a></li>
+<li><a href="#mis-checklist">MIS Checklist</a></li>
+<li><a href="#mis-extract-save-to-file">MIS Extract — Save to File</a></li>
+</ul>
+</li>
+<li><a href="#phase-4-fill-the-template-one-script">Phase 4 — Fill the Template (One Script)</a><ul>
+<li><a href="#script-structure">Script Structure</a></li>
+<li><a href="#column-layout">Column Layout</a></li>
+<li><a href="#header-rows-fill-for-each-column">Header Rows (fill for each column)</a></li>
+<li><a href="#quick-reference-all-input-rows">Quick Reference — All Input Rows</a></li>
+<li><a href="#rows-1820-by-business-type">Rows 18–20 by Business Type</a></li>
+<li><a href="#pl-line-item-mapping">P&amp;L Line-Item Mapping</a></li>
+<li><a href="#balance-sheet-line-item-mapping">Balance Sheet Line-Item Mapping</a></li>
+<li><a href="#structural-complexity-watch-for-these-while-filling">Structural Complexity — Watch for These While Filling</a></li>
+<li><a href="#common-pitfalls">Common Pitfalls</a></li>
+<li><a href="#mis-filling-key-differences">MIS Filling — Key Differences</a></li>
+</ul>
+</li>
+<li><a href="#phase-5-verification">Phase 5 — Verification</a></li>
+<li><a href="#phase-6-dtnw-granularities-dtnw_granularitiesmd">Phase 6 — D/TNW Granularities (dtnw_granularities.md)</a></li>
+<li><a href="#outputs">Outputs</a><ul>
+<li><a href="#1-company_structuremd">1. company_structure.md</a></li>
+<li><a href="#2-financial_appraisal_company_namexlsx">2. Financial_Appraisal_[company_name].xlsx</a></li>
+<li><a href="#3-dtnw_granularitiesmd">3. dtnw_granularities.md</a></li>
+</ul>
+</li>
+</ul>
+</div>
+
+        </aside>
+      </div>
+    </div>
+
+  </main>
+</div>
+<script>
+(function () {
+  var root = document.documentElement;
+  var saved = null;
+  try { saved = localStorage.getItem('nps-theme'); } catch (e) {}
+  if (saved) root.setAttribute('data-theme', saved);
+
+  function currentTheme() {
+    return root.getAttribute('data-theme') ||
+      (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  }
+  var toggle = document.getElementById('theme');
+  function label() { if (toggle) toggle.textContent = currentTheme() === 'dark' ? 'Light mode' : 'Dark mode'; }
+  label();
+  if (toggle) toggle.addEventListener('click', function () {
+    var next = currentTheme() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('nps-theme', next); } catch (e) {}
+    label();
+  });
+
+  // mobile drawer
+  var side = document.querySelector('.side');
+  var btn = document.getElementById('menu');
+  var scrim;
+  function close() {
+    side.classList.remove('open');
+    if (scrim) { scrim.remove(); scrim = null; }
+  }
+  if (btn) btn.addEventListener('click', function () {
+    if (side.classList.contains('open')) return close();
+    side.classList.add('open');
+    scrim = document.createElement('div');
+    scrim.className = 'scrim';
+    scrim.addEventListener('click', close);
+    document.body.appendChild(scrim);
+  });
+
+  // nav filter
+  var filter = document.getElementById('filter');
+  if (filter) filter.addEventListener('input', function () {
+    var q = filter.value.trim().toLowerCase();
+    document.querySelectorAll('.navgroup li').forEach(function (li) {
+      li.classList.toggle('hide', q !== '' && li.textContent.toLowerCase().indexOf(q) === -1);
+    });
+    document.querySelectorAll('.navgroup').forEach(function (g) {
+      var any = Array.prototype.some.call(g.querySelectorAll('li'), function (li) { return !li.classList.contains('hide'); });
+      g.style.display = any ? '' : 'none';
+    });
+  });
+
+  // active heading in the right rail
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  if (links.length) {
+    var map = {};
+    var targets = [];
+    links.forEach(function (a) {
+      var el = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));
+      if (el) { map[el.id] = a; targets.push(el); }
+    });
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        links.forEach(function (a) { a.classList.remove('on'); });
+        var a = map[en.target.id];
+        if (a) a.classList.add('on');
+      });
+    }, { rootMargin: '0px 0px -72% 0px', threshold: 0 });
+    targets.forEach(function (t) { obs.observe(t); });
+  }
+})();
+</script>
+</body>
+</html>

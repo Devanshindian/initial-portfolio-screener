@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Profit and Loss — Nandan Initial Portfolio Screener</title>
+<meta name="description" content="Margin waterfall, trend analysis and comparison against industry benchmarks.">
+<meta property="og:title" content="Profit and Loss — Nandan Initial Portfolio Screener">
+<meta property="og:description" content="Margin waterfall, trend analysis and comparison against industry benchmarks.">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#128202;</text></svg>">
+
+</head>
+<body>
+<div class="topbar">
+  <button id="menu" aria-label="Open navigation">Menu</button>
+  <span class="t">Nandan Initial Portfolio Screener</span>
+</div>
+<div class="shell">
+  <aside class="side">
+    <a class="brand" href="index.html">
+      <span class="mark">Nandan Initial<br>Portfolio Screener</span>
+      <span class="sub">Screening framework reference</span>
+    </a>
+    <input id="filter" class="filter" type="search" placeholder="Filter sections" aria-label="Filter sections">
+    <nav class="navgroup"><h2>Framework</h2><ul>
+<li><a href="section0-overview.html"><span class="kicker">Section 0</span>Company Overview</a></li>
+<li><a href="section1-rejection.html"><span class="kicker">Section 1</span>Preliminary Rejection</a></li>
+<li><a href="section2-screening.html"><span class="kicker">Section 2</span>Initial Screening</a></li>
+<li><a href="section3-cashflow.html"><span class="kicker">Section 3</span>Cash Flow</a></li>
+<li><a href="section4-pl.html" class="on"><span class="kicker">Section 4</span>Profit and Loss</a></li>
+<li><a href="section5-balance-sheet.html"><span class="kicker">Section 5</span>Balance Sheet</a></li>
+<li><a href="section6-debt.html"><span class="kicker">Section 6</span>Debt Structure</a></li>
+</ul></nav>
+<nav class="navgroup"><h2>Process</h2><ul>
+<li><a href="template-integration.html"><span class="kicker">Process</span>Template Integration</a></li>
+</ul></nav>
+<nav class="navgroup"><h2>Output</h2><ul>
+<li><a href="output-template.html"><span class="kicker">Output</span>Report Template and House Style</a></li>
+</ul></nav>
+    <div class="sidefoot">
+      <button id="theme" type="button">Dark mode</button>
+      <a href="https://github.com/Devanshindian/initial-portfolio-screener">Source on GitHub</a>
+    </div>
+  </aside>
+  <main class="main">
+    
+    <div class="wrap">
+      <div class="doc">
+        <article>
+          <header class="pagehead">
+            <div class="kicker">Section 4</div>
+            <h1>Section 4 — P&amp;L Analysis</h1>
+            <p>Margin waterfall, trend analysis and comparison against industry benchmarks.</p>
+            <div class="meta">
+              <span><code>references/section4-pl.md</code></span>
+              <span>9 min read</span>
+              <span><a href="https://github.com/Devanshindian/initial-portfolio-screener/blob/main/nandan-screener/references/section4-pl.md">View raw markdown</a></span>
+            </div>
+          </header>
+          <div class="md">
+<h1 id="section-4-pl-analysis">Section 4 — P&amp;L Analysis<a class="headerlink" href="#section-4-pl-analysis" title="Permanent link">#</a></h1>
+<p>Profitability metrics tell you what the business earns and where the margin is won or lost. This section is MIS-led for the contribution-margin detail, but the full waterfall is built for every available year.</p>
+<hr />
+<h2 id="sources">Sources<a class="headerlink" href="#sources" title="Permanent link">#</a></h2>
+<ul>
+<li><strong>Audited years</strong> — <code>companies/[company_name]/Financial_Appraisal_[company_name].xlsx</code>, sheet <code>Info and Adjustments</code></li>
+<li><strong>MIS year</strong> — <code>companies/[company_name]/mis_[period].md</code></li>
+</ul>
+<hr />
+<h2 id="step-1-build-the-margin-waterfall-all-available-years">Step 1 — Build the Margin Waterfall (all available years)<a class="headerlink" href="#step-1-build-the-margin-waterfall-all-available-years" title="Permanent link">#</a></h2>
+<p>Build one combined table for all available years (audited years + MIS period). Each year gets two columns — <strong>₹ Cr</strong> and <strong>% of revenue</strong> — side by side. CM1 and CM2 = "–" for audited-only years unless the MIS contains historical breakdowns for those years.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Level</th>
+<th>FY__ ₹ Cr</th>
+<th>FY__ %</th>
+<th>FY__ ₹ Cr</th>
+<th>FY__ %</th>
+<th>MIS [period] ₹ Cr</th>
+<th>MIS [period] %</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Revenue</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>COGS</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Gross Margin</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>CM1 costs</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td><strong>CM1</strong></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>CM2 costs</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td><strong>CM2</strong></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Fixed costs</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>EBITDA</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D&amp;A</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>EBIT</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Finance costs</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>PBT</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Tax</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>PAT</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>Add as many year-pairs (₹ Cr + %) as there are available periods. CM1/CM2 = "–" on audited-only years unless MIS has historical line-item breakdowns for those years.</p>
+</blockquote>
+<hr />
+<h2 id="step-2-how-to-populate-each-year">Step 2 — How to Populate Each Year<a class="headerlink" href="#step-2-how-to-populate-each-year" title="Permanent link">#</a></h2>
+<h3 id="audited-years-pull-from-financial_appraisal_company_namexlsx">Audited years — pull from <code>Financial_Appraisal_[company_name].xlsx</code><a class="headerlink" href="#audited-years-pull-from-financial_appraisal_company_namexlsx" title="Permanent link">#</a></h3>
+<p>All rows reference sheet <code>Info and Adjustments</code>:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Row(s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Revenue</td>
+<td>Row 11 (Revenue from Operations) — exclude Other Income (Row 14)</td>
+</tr>
+<tr>
+<td>COGS</td>
+<td>Row 18 + Row 19 [+ Row 20 if manufacturing]</td>
+</tr>
+<tr>
+<td>Gross Margin</td>
+<td>Revenue − COGS</td>
+</tr>
+<tr>
+<td>CM1, CM2</td>
+<td>"–" (not in template) — see MIS section below</td>
+</tr>
+<tr>
+<td>EBITDA</td>
+<td>Row 29 (PBT) + Row 23 (Finance) + Row 24 (Depreciation)</td>
+</tr>
+<tr>
+<td>EBIT</td>
+<td>Row 29 + Row 23</td>
+</tr>
+<tr>
+<td>PBT</td>
+<td>Row 29</td>
+</tr>
+<tr>
+<td>Tax</td>
+<td>Row 30 + Row 31</td>
+</tr>
+<tr>
+<td>PAT</td>
+<td>Row 38</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="mis-year-pull-from-mis_periodmd">MIS year — pull from <code>mis_[period].md</code><a class="headerlink" href="#mis-year-pull-from-mis_periodmd" title="Permanent link">#</a></h3>
+<p>Every company's MIS lists costs differently — read it line by line and drop each line into the right waterfall level using the classification below. The end goal is to produce the same waterfall structure as above, now with CM1 and CM2 populated.</p>
+<p><strong>Cost classification:</strong></p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>What goes here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CM1</strong> (variable operating, scales per order)</td>
+<td>Logistics / shipping / freight, payment-gateway / processing fees, packing / fulfilment consumables, platform / marketplace fees, sales commission, channel commission</td>
+</tr>
+<tr>
+<td><strong>CM2</strong> (CAC + other variable)</td>
+<td>Advertising &amp; marketing, performance spend, marketing retention, any per-sale variable not already in CM1</td>
+</tr>
+<tr>
+<td><strong>Fixed</strong> (sits below CM2, in EBITDA)</td>
+<td>Rent / lease, salaries / employee benefits, electricity / utilities, office &amp; store / admin, professional / legal, rates &amp; taxes / licenses / subscriptions, travel, photoshoot / display &amp; VM, repairs, insurance, depreciation, finance costs</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Ambiguous lines</strong> (e.g. "other direct expenses"): assign to the most appropriate layer, state your treatment, and note whether moving it would flip a sign. If it is &lt; ~1–2% of revenue it cannot change the read — say so.</p>
+<blockquote>
+<p>If the MIS contains historical year breakdowns (prior FYs broken down by cost line), use those to populate CM1/CM2 for those years as well — do not leave them as "–" if the data exists.</p>
+</blockquote>
+<hr />
+<h2 id="step-3-trend-analysis">Step 3 — Trend Analysis<a class="headerlink" href="#step-3-trend-analysis" title="Permanent link">#</a></h2>
+<h3 id="annual-trend-table">Annual trend table<a class="headerlink" href="#annual-trend-table" title="Permanent link">#</a></h3>
+<p>Build this table first. It extends the waterfall into a trend read — margins only (% of revenue), one trend one-liner per row, plus the key cost lines:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>FY__ %</th>
+<th>FY__ %</th>
+<th>MIS [period] %</th>
+<th>Trend</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Revenue YoY growth %</td>
+<td>—</td>
+<td></td>
+<td></td>
+<td>e.g. "Accelerating — 18% → 34%"</td>
+</tr>
+<tr>
+<td>Gross Margin %</td>
+<td></td>
+<td></td>
+<td></td>
+<td>e.g. "Expanding from 38% → 42%"</td>
+</tr>
+<tr>
+<td>CM1 %</td>
+<td>–</td>
+<td>–</td>
+<td></td>
+<td>e.g. "CM1 at 28% in MIS period"</td>
+</tr>
+<tr>
+<td>CM2 %</td>
+<td>–</td>
+<td>–</td>
+<td></td>
+<td>e.g. "CM2 positive at 18% — unit economics healthy"</td>
+</tr>
+<tr>
+<td>EBITDA %</td>
+<td></td>
+<td></td>
+<td></td>
+<td>e.g. "Improving from −4% → +6%"</td>
+</tr>
+<tr>
+<td>EBIT %</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PBT %</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PAT %</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Employee cost %</td>
+<td></td>
+<td></td>
+<td></td>
+<td>e.g. "Declining 24% → 19% — scale absorbing headcount"</td>
+</tr>
+<tr>
+<td>Finance cost %</td>
+<td></td>
+<td></td>
+<td></td>
+<td>e.g. "Rising 3% → 6% — watch for debt trap"</td>
+</tr>
+<tr>
+<td>Marketing %</td>
+<td></td>
+<td></td>
+<td></td>
+<td>e.g. "Stable at ~12% — CAC efficiency holding"</td>
+</tr>
+<tr>
+<td>Rent / fixed overhead %</td>
+<td></td>
+<td></td>
+<td></td>
+<td>e.g. "Declining 8% → 5% — operating leverage visible"</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="quarterly-trend-table-only-if-mis-is-monthly-or-quarterly">Quarterly trend table (only if MIS is monthly or quarterly)<a class="headerlink" href="#quarterly-trend-table-only-if-mis-is-monthly-or-quarterly" title="Permanent link">#</a></h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Q1 %</th>
+<th>Q2 %</th>
+<th>Q3 %</th>
+<th>Q4 %</th>
+<th>Trend</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Revenue (₹ Cr)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>e.g. "Accelerating through year, Q4 strongest"</td>
+</tr>
+<tr>
+<td>Gross Margin %</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>CM1 %</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>CM2 %</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>EBITDA %</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Employee cost %</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Finance cost %</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Marketing %</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Rent / fixed overhead %</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<p>If the MIS is annual only, skip this table and note: "Quarterly breakdown not available — MIS is annual."</p>
+<h3 id="key-cost-commentary">Key cost commentary<a class="headerlink" href="#key-cost-commentary" title="Permanent link">#</a></h3>
+<p>After building both tables, write 3–5 lines calling out the direction and implication of each key cost line — use the trend one-liners from the tables as the basis. Flag any line moving the wrong way.</p>
+<p><strong>One-off / non-recurring costs:</strong> scan the MIS for one-time items (settlements, write-offs, one-off legal/consulting, founder bonuses, prior-period adjustments). Strip them out to see the underlying trend. Report a normalised (ex-one-off) EBITDA/PBT where it changes the read. Watch a fixed line that jumps once and stays elevated — that is a step-change, not a one-off.</p>
+<p><strong>Green signals:</strong> revenue growing with margins expanding (operating leverage working); fixed costs declining as % of revenue (scalable model).</p>
+<p><strong>Red flags:</strong> revenue up but margins contracting (pricing pressure / cost inflation); finance cost growing faster than revenue (debt trap); EBITDA % negative and worsening; material share of PBT from Other Income (profit propped up by non-operating income).</p>
+<hr />
+<h2 id="step-4-industry-benchmarking">Step 4 — Industry Benchmarking<a class="headerlink" href="#step-4-industry-benchmarking" title="Permanent link">#</a></h2>
+<p>Web-search the sector and name real peers. Build a comparison table against the top company, a couple of listed peers, and the industry average. Include each company's revenue so the comparison is size-aware:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Company</th>
+<th>Revenue (₹ Cr)</th>
+<th>Gross Margin %</th>
+<th>EBITDA %</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[Subject company]</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>[Peer 1]</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>[Peer 2]</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Industry average</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Variance vs industry</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&gt; 5% below industry average</td>
+<td>Flag and explain — cost structure, scale disadvantage, or business-model difference</td>
+</tr>
+<tr>
+<td>&gt; 10% below industry average</td>
+<td>🔴 Red flag</td>
+</tr>
+<tr>
+<td>Above industry average</td>
+<td>Positive signal — verify sustainability</td>
+</tr>
+</tbody>
+</table></div>
+<p>Use the peer/archetype list already built in <code>companies/[company_name]/section0_output.md</code> (Section 0 Block B) — do not re-research from scratch.</p>
+<hr />
+<h2 id="output">Output<a class="headerlink" href="#output" title="Permanent link">#</a></h2>
+<p>Write to <code>companies/[company_name]/section4_output.md</code> using this exact template:</p>
+<hr />
+<pre><code>## Section 4 — P&amp;L Analysis
+
+### A. Margin Waterfall
+
+| Level        | FY__ ₹ Cr | FY__ % | FY__ ₹ Cr | FY__ % | MIS [period] ₹ Cr | MIS [period] % | Trend |
+|---|---|---|---|---|---|---|---|
+| Revenue      |   |   |   |   |   |   | e.g. &quot;Growing 34% YoY; Q4 run-rate strongest (see quarterly trend)&quot; |
+| Gross Margin |   |   |   |   |   |   | e.g. &quot;Expanding 38% → 42%; Q3/Q4 margins stronger than H1 (see quarterly trend)&quot; |
+| CM1          | – | – | – | – |   |   | e.g. &quot;28% in MIS period — variable ops well controlled&quot; |
+| CM2          | – | – | – | – |   |   | e.g. &quot;18% — unit economics positive; Q4 CM2 improving (see quarterly trend)&quot; |
+| EBITDA       |   |   |   |   |   |   | e.g. &quot;Turning positive FY25; Q4 EBITDA% strongest quarter (see quarterly trend)&quot; |
+| PAT          |   |   |   |   |   |   | e.g. &quot;Still loss-making; narrowing&quot; |
+
+### B. Key Findings
+
+[4–5 lines. Cover: (1) unit economics — is CM2 positive and stable? (2) margin trajectory — expanding or contracting and why? (3) operating leverage — are fixed costs declining as % of revenue as the business scales? (4) any red flag — finance cost creeping up, Other Income propping up PBT, one-off distorting the read. Keep it sharp — this is the analyst's interpretation, not a data dump.]
+
+### C. Industry Benchmark
+
+| Company           | Revenue (₹ Cr) | Gross Margin % | EBITDA % |
+|---|---|---|---|
+| [Subject company] |                |                |          |
+| [Peer 1]          |                |                |          |
+| [Peer 2]          |                |                |          |
+| Industry average  |                |                |          |
+
+[One line on the variance — is it explained by scale, business model, or a structural disadvantage?]
+
+---
+
+### Supporting Data — Trend Tables
+*(detailed; for reference)*
+
+**Annual trend**
+
+| Metric                     | FY__ % | FY__ % | MIS [period] % | Trend |
+|---|---|---|---|---|
+| Revenue YoY growth %       |        |        |                |       |
+| Gross Margin %             |        |        |                |       |
+| CM1 %                      |   –    |   –    |                |       |
+| CM2 %                      |   –    |   –    |                |       |
+| EBITDA %                   |        |        |                |       |
+| EBIT %                     |        |        |                |       |
+| PBT %                      |        |        |                |       |
+| PAT %                      |        |        |                |       |
+| Employee cost %            |        |        |                |       |
+| Finance cost %             |        |        |                |       |
+| Marketing %                |        |        |                |       |
+| Rent / fixed overhead %    |        |        |                |       |
+
+**Quarterly trend** *(only if MIS is monthly or quarterly; skip and note if annual)*
+
+| Metric              | Q1 % | Q2 % | Q3 % | Q4 % | Trend |
+|---|---|---|---|---|---|
+| Revenue (₹ Cr)      |      |      |      |      |       |
+| Gross Margin %      |      |      |      |      |       |
+| CM1 %               |      |      |      |      |       |
+| CM2 %               |      |      |      |      |       |
+| EBITDA %            |      |      |      |      |       |
+| Employee cost %     |      |      |      |      |       |
+| Finance cost %      |      |      |      |      |       |
+| Marketing %         |      |      |      |      |       |
+| Rent / overhead %   |      |      |      |      |       |
+</code></pre>
+<hr />
+          </div>
+          <nav class="pager"><a class="prev" href="section3-cashflow.html"><span class="lbl">Previous</span><span class="ttl">Cash Flow</span></a><a class="next" href="section5-balance-sheet.html"><span class="lbl">Next</span><span class="ttl">Balance Sheet</span></a></nav>
+        </article>
+        <aside class="toc">
+          <div class="h">On this page</div>
+          <div class="toc">
+<ul>
+<li><a href="#sources">Sources</a></li>
+<li><a href="#step-1-build-the-margin-waterfall-all-available-years">Step 1 — Build the Margin Waterfall (all available years)</a></li>
+<li><a href="#step-2-how-to-populate-each-year">Step 2 — How to Populate Each Year</a><ul>
+<li><a href="#audited-years-pull-from-financial_appraisal_company_namexlsx">Audited years — pull from Financial_Appraisal_[company_name].xlsx</a></li>
+<li><a href="#mis-year-pull-from-mis_periodmd">MIS year — pull from mis_[period].md</a></li>
+</ul>
+</li>
+<li><a href="#step-3-trend-analysis">Step 3 — Trend Analysis</a><ul>
+<li><a href="#annual-trend-table">Annual trend table</a></li>
+<li><a href="#quarterly-trend-table-only-if-mis-is-monthly-or-quarterly">Quarterly trend table (only if MIS is monthly or quarterly)</a></li>
+<li><a href="#key-cost-commentary">Key cost commentary</a></li>
+</ul>
+</li>
+<li><a href="#step-4-industry-benchmarking">Step 4 — Industry Benchmarking</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</div>
+
+        </aside>
+      </div>
+    </div>
+
+  </main>
+</div>
+<script>
+(function () {
+  var root = document.documentElement;
+  var saved = null;
+  try { saved = localStorage.getItem('nps-theme'); } catch (e) {}
+  if (saved) root.setAttribute('data-theme', saved);
+
+  function currentTheme() {
+    return root.getAttribute('data-theme') ||
+      (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  }
+  var toggle = document.getElementById('theme');
+  function label() { if (toggle) toggle.textContent = currentTheme() === 'dark' ? 'Light mode' : 'Dark mode'; }
+  label();
+  if (toggle) toggle.addEventListener('click', function () {
+    var next = currentTheme() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('nps-theme', next); } catch (e) {}
+    label();
+  });
+
+  // mobile drawer
+  var side = document.querySelector('.side');
+  var btn = document.getElementById('menu');
+  var scrim;
+  function close() {
+    side.classList.remove('open');
+    if (scrim) { scrim.remove(); scrim = null; }
+  }
+  if (btn) btn.addEventListener('click', function () {
+    if (side.classList.contains('open')) return close();
+    side.classList.add('open');
+    scrim = document.createElement('div');
+    scrim.className = 'scrim';
+    scrim.addEventListener('click', close);
+    document.body.appendChild(scrim);
+  });
+
+  // nav filter
+  var filter = document.getElementById('filter');
+  if (filter) filter.addEventListener('input', function () {
+    var q = filter.value.trim().toLowerCase();
+    document.querySelectorAll('.navgroup li').forEach(function (li) {
+      li.classList.toggle('hide', q !== '' && li.textContent.toLowerCase().indexOf(q) === -1);
+    });
+    document.querySelectorAll('.navgroup').forEach(function (g) {
+      var any = Array.prototype.some.call(g.querySelectorAll('li'), function (li) { return !li.classList.contains('hide'); });
+      g.style.display = any ? '' : 'none';
+    });
+  });
+
+  // active heading in the right rail
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  if (links.length) {
+    var map = {};
+    var targets = [];
+    links.forEach(function (a) {
+      var el = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));
+      if (el) { map[el.id] = a; targets.push(el); }
+    });
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        links.forEach(function (a) { a.classList.remove('on'); });
+        var a = map[en.target.id];
+        if (a) a.classList.add('on');
+      });
+    }, { rootMargin: '0px 0px -72% 0px', threshold: 0 });
+    targets.forEach(function (t) { obs.observe(t); });
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cash Flow — Nandan Initial Portfolio Screener</title>
+<meta name="description" content="Operating cash flow, free cash flow, Debt/FCF and interest cover, plus both runway scenarios.">
+<meta property="og:title" content="Cash Flow — Nandan Initial Portfolio Screener">
+<meta property="og:description" content="Operating cash flow, free cash flow, Debt/FCF and interest cover, plus both runway scenarios.">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#128202;</text></svg>">
+
+</head>
+<body>
+<div class="topbar">
+  <button id="menu" aria-label="Open navigation">Menu</button>
+  <span class="t">Nandan Initial Portfolio Screener</span>
+</div>
+<div class="shell">
+  <aside class="side">
+    <a class="brand" href="index.html">
+      <span class="mark">Nandan Initial<br>Portfolio Screener</span>
+      <span class="sub">Screening framework reference</span>
+    </a>
+    <input id="filter" class="filter" type="search" placeholder="Filter sections" aria-label="Filter sections">
+    <nav class="navgroup"><h2>Framework</h2><ul>
+<li><a href="section0-overview.html"><span class="kicker">Section 0</span>Company Overview</a></li>
+<li><a href="section1-rejection.html"><span class="kicker">Section 1</span>Preliminary Rejection</a></li>
+<li><a href="section2-screening.html"><span class="kicker">Section 2</span>Initial Screening</a></li>
+<li><a href="section3-cashflow.html" class="on"><span class="kicker">Section 3</span>Cash Flow</a></li>
+<li><a href="section4-pl.html"><span class="kicker">Section 4</span>Profit and Loss</a></li>
+<li><a href="section5-balance-sheet.html"><span class="kicker">Section 5</span>Balance Sheet</a></li>
+<li><a href="section6-debt.html"><span class="kicker">Section 6</span>Debt Structure</a></li>
+</ul></nav>
+<nav class="navgroup"><h2>Process</h2><ul>
+<li><a href="template-integration.html"><span class="kicker">Process</span>Template Integration</a></li>
+</ul></nav>
+<nav class="navgroup"><h2>Output</h2><ul>
+<li><a href="output-template.html"><span class="kicker">Output</span>Report Template and House Style</a></li>
+</ul></nav>
+    <div class="sidefoot">
+      <button id="theme" type="button">Dark mode</button>
+      <a href="https://github.com/Devanshindian/initial-portfolio-screener">Source on GitHub</a>
+    </div>
+  </aside>
+  <main class="main">
+    
+    <div class="wrap">
+      <div class="doc">
+        <article>
+          <header class="pagehead">
+            <div class="kicker">Section 3</div>
+            <h1>Section 3 — Cash Flow Analysis</h1>
+            <p>Operating cash flow, free cash flow, Debt/FCF and interest cover, plus both runway scenarios.</p>
+            <div class="meta">
+              <span><code>references/section3-cashflow.md</code></span>
+              <span>3 min read</span>
+              <span><a href="https://github.com/Devanshindian/initial-portfolio-screener/blob/main/nandan-screener/references/section3-cashflow.md">View raw markdown</a></span>
+            </div>
+          </header>
+          <div class="md">
+<h1 id="section-3-cash-flow-analysis">Section 3 — Cash Flow Analysis<a class="headerlink" href="#section-3-cash-flow-analysis" title="Permanent link">#</a></h1>
+<p>Cash flow tells you what the business actually <em>has</em>, not what it earns on paper. For a debt fund, repayment comes from cash — so these ratios answer: does the business generate enough real cash to service and retire its debt, without leaning on refinancing?</p>
+<hr />
+<h2 id="source-the-filled-template">Source — the filled template<a class="headerlink" href="#source-the-filled-template" title="Permanent link">#</a></h2>
+<p>Read from <code>companies/[company_name]/Financial_Appraisal_[company_name].xlsx</code>, sheet <code>Info and Adjustments</code>. The template auto-builds three cash flow statements from the balance sheets and P&amp;L:</p>
+<ul>
+<li><strong>Cashflow from operations</strong> = Row 134</li>
+<li><strong>Cashflow from financing</strong> = Row 144</li>
+<li><strong>Cashflow from investing</strong> = Row 155</li>
+</ul>
+<p><strong>Which column to use:</strong> first check whether the latest MIS column has a populated Row 134 (a cash flow requires two consecutive balance sheets behind it — if the MIS had a balance sheet, the template will have built it). If Row 134 is populated in the MIS column, use that as the latest period. Otherwise fall back to the latest audited FY column. Then compute for every earlier audited year where Row 134 is also populated.</p>
+<p><strong>Consistency rule:</strong> once you have chosen a column (period), use that same column for OCF, Capex, FCF, and Total Debt throughout. Do not mix figures across columns.</p>
+<hr />
+<h2 id="core-metrics">Core Metrics<a class="headerlink" href="#core-metrics" title="Permanent link">#</a></h2>
+<h3 id="ocf-operating-cash-flow">OCF — Operating Cash Flow<a class="headerlink" href="#ocf-operating-cash-flow" title="Permanent link">#</a></h3>
+<p><strong>= Row 134</strong> — already after working-capital movements and before interest. This is the base the coverage ratios need.</p>
+<h3 id="fcf-free-cash-flow">FCF — Free Cash Flow<a class="headerlink" href="#fcf-free-cash-flow" title="Permanent link">#</a></h3>
+<p><strong>= OCF − Capex</strong>, where Capex = Row 147 (tangible) + Row 148 (intangible), stored as negative cash impacts.</p>
+<pre><code>FCF = Row 134 + Row 147 + Row 148
+</code></pre>
+<p>FCF is what is actually left to service debt after maintaining/growing the asset base. Strong OCF with heavy capex can leave little or no FCF — that distinction is the point.</p>
+<h3 id="debt-fcf">Debt / FCF<a class="headerlink" href="#debt-fcf" title="Permanent link">#</a></h3>
+<p><strong>= Total Debt ÷ FCF</strong>, where Total Debt = Row 57 (LT Borrowings) + Row 62 (ST Borrowings) — from the same column.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Debt / FCF</th>
+<th>Reading</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt; 2x</td>
+<td>Very healthy — can retire debt in under 2 years</td>
+</tr>
+<tr>
+<td>2x – 4x</td>
+<td>Comfortable — standard for stable businesses</td>
+</tr>
+<tr>
+<td>4x – 6x</td>
+<td>Elevated — manageable if growth is strong</td>
+</tr>
+<tr>
+<td>6x – 8x</td>
+<td>Stressed — needs consistent FCF growth</td>
+</tr>
+<tr>
+<td>&gt; 8x</td>
+<td>Danger zone — essentially dependent on refinancing</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Flag if Debt / FCF &gt; 6x.</strong> If FCF ≤ 0, the ratio is not meaningful — flag as <em>"FCF negative — debt cannot be retired from operating cash"</em>. Do not read a negative ratio as low or healthy.</p>
+<h3 id="icr-interest-coverage-cash-basis">ICR — Interest Coverage (cash basis)<a class="headerlink" href="#icr-interest-coverage-cash-basis" title="Permanent link">#</a></h3>
+<p><strong>= FCF ÷ Interest</strong>, where Interest = Row 23 (same column).</p>
+<pre><code>ICR = (Row 134 + Row 147 + Row 148) ÷ Row 23
+</code></pre>
+<p><strong>Flag if ICR &lt; 1x</strong> — the business cannot cover even its interest from free cash flow. More reliable than EBIT-based interest cover because it uses actual cash, not accounting profit. FCF &lt; 0 → ICR negative → fails.</p>
+<h3 id="dscr-not-computed-deliberately">DSCR — not computed (deliberately)<a class="headerlink" href="#dscr-not-computed-deliberately" title="Permanent link">#</a></h3>
+<p>DSCR = (OCF − Capex) ÷ (Interest + Principal). Principal repayments need a repayment schedule, which is rarely provided. Under the standing assumption that long-term principal is refinanced (principal = 0), DSCR collapses to exactly ICR — so it adds nothing here and is skipped.</p>
+<hr />
+<h2 id="period-basis-and-trend">Period Basis and Trend<a class="headerlink" href="#period-basis-and-trend" title="Permanent link">#</a></h2>
+<p>Compute each metric for every column where Row 134 is populated and read the trajectory — is OCF/FCF improving or deteriorating? A one-year snapshot can mislead; the trend is the signal.</p>
+<hr />
+<h2 id="output">Output<a class="headerlink" href="#output" title="Permanent link">#</a></h2>
+<p>Write to <code>companies/[company_name]/section3_output.md</code> — a metrics table and a short interpretation. No annexure — the cash flow statement already lives in the filled template.</p>
+<pre><code>Section 3 — Cash Flow Analysis
+
+| Metric        | FY__ | FY__ | Threshold | Flag |
+|---------------|------|------|-----------|------|
+| OCF (₹ Cr)    |      |      | —         |      |
+| Capex (₹ Cr)  |      |      | —         |      |
+| FCF (₹ Cr)    |      |      | &gt; 0       |      |
+| Total Debt    |      |      | —         |      |
+| Debt / FCF    |      |      | ≤ 6x      |      |
+| ICR (cash)    |      |      | ≥ 1x      |      |
+
+Interpretation: [2–3 lines — can the business service (ICR) and retire (Debt/FCF) its debt
+from operating cash? Trend across years? Call out any flagged ratio and any
+not-meaningful (negative-FCF) case.]
+</code></pre>
+          </div>
+          <nav class="pager"><a class="prev" href="section2-screening.html"><span class="lbl">Previous</span><span class="ttl">Initial Screening</span></a><a class="next" href="section4-pl.html"><span class="lbl">Next</span><span class="ttl">Profit and Loss</span></a></nav>
+        </article>
+        <aside class="toc">
+          <div class="h">On this page</div>
+          <div class="toc">
+<ul>
+<li><a href="#source-the-filled-template">Source — the filled template</a></li>
+<li><a href="#core-metrics">Core Metrics</a><ul>
+<li><a href="#ocf-operating-cash-flow">OCF — Operating Cash Flow</a></li>
+<li><a href="#fcf-free-cash-flow">FCF — Free Cash Flow</a></li>
+<li><a href="#debt-fcf">Debt / FCF</a></li>
+<li><a href="#icr-interest-coverage-cash-basis">ICR — Interest Coverage (cash basis)</a></li>
+<li><a href="#dscr-not-computed-deliberately">DSCR — not computed (deliberately)</a></li>
+</ul>
+</li>
+<li><a href="#period-basis-and-trend">Period Basis and Trend</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</div>
+
+        </aside>
+      </div>
+    </div>
+
+  </main>
+</div>
+<script>
+(function () {
+  var root = document.documentElement;
+  var saved = null;
+  try { saved = localStorage.getItem('nps-theme'); } catch (e) {}
+  if (saved) root.setAttribute('data-theme', saved);
+
+  function currentTheme() {
+    return root.getAttribute('data-theme') ||
+      (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  }
+  var toggle = document.getElementById('theme');
+  function label() { if (toggle) toggle.textContent = currentTheme() === 'dark' ? 'Light mode' : 'Dark mode'; }
+  label();
+  if (toggle) toggle.addEventListener('click', function () {
+    var next = currentTheme() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('nps-theme', next); } catch (e) {}
+    label();
+  });
+
+  // mobile drawer
+  var side = document.querySelector('.side');
+  var btn = document.getElementById('menu');
+  var scrim;
+  function close() {
+    side.classList.remove('open');
+    if (scrim) { scrim.remove(); scrim = null; }
+  }
+  if (btn) btn.addEventListener('click', function () {
+    if (side.classList.contains('open')) return close();
+    side.classList.add('open');
+    scrim = document.createElement('div');
+    scrim.className = 'scrim';
+    scrim.addEventListener('click', close);
+    document.body.appendChild(scrim);
+  });
+
+  // nav filter
+  var filter = document.getElementById('filter');
+  if (filter) filter.addEventListener('input', function () {
+    var q = filter.value.trim().toLowerCase();
+    document.querySelectorAll('.navgroup li').forEach(function (li) {
+      li.classList.toggle('hide', q !== '' && li.textContent.toLowerCase().indexOf(q) === -1);
+    });
+    document.querySelectorAll('.navgroup').forEach(function (g) {
+      var any = Array.prototype.some.call(g.querySelectorAll('li'), function (li) { return !li.classList.contains('hide'); });
+      g.style.display = any ? '' : 'none';
+    });
+  });
+
+  // active heading in the right rail
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  if (links.length) {
+    var map = {};
+    var targets = [];
+    links.forEach(function (a) {
+      var el = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));
+      if (el) { map[el.id] = a; targets.push(el); }
+    });
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        links.forEach(function (a) { a.classList.remove('on'); });
+        var a = map[en.target.id];
+        if (a) a.classList.add('on');
+      });
+    }, { rootMargin: '0px 0px -72% 0px', threshold: 0 });
+    targets.forEach(function (t) { obs.observe(t); });
+  }
+})();
+</script>
+</body>
+</html>

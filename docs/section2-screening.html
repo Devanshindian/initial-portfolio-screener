@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Initial Screening — Nandan Initial Portfolio Screener</title>
+<meta name="description" content="Six screening criteria. Four must be met; exactly four is a borderline flag that still passes.">
+<meta property="og:title" content="Initial Screening — Nandan Initial Portfolio Screener">
+<meta property="og:description" content="Six screening criteria. Four must be met; exactly four is a borderline flag that still passes.">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#128202;</text></svg>">
+
+</head>
+<body>
+<div class="topbar">
+  <button id="menu" aria-label="Open navigation">Menu</button>
+  <span class="t">Nandan Initial Portfolio Screener</span>
+</div>
+<div class="shell">
+  <aside class="side">
+    <a class="brand" href="index.html">
+      <span class="mark">Nandan Initial<br>Portfolio Screener</span>
+      <span class="sub">Screening framework reference</span>
+    </a>
+    <input id="filter" class="filter" type="search" placeholder="Filter sections" aria-label="Filter sections">
+    <nav class="navgroup"><h2>Framework</h2><ul>
+<li><a href="section0-overview.html"><span class="kicker">Section 0</span>Company Overview</a></li>
+<li><a href="section1-rejection.html"><span class="kicker">Section 1</span>Preliminary Rejection</a></li>
+<li><a href="section2-screening.html" class="on"><span class="kicker">Section 2</span>Initial Screening</a></li>
+<li><a href="section3-cashflow.html"><span class="kicker">Section 3</span>Cash Flow</a></li>
+<li><a href="section4-pl.html"><span class="kicker">Section 4</span>Profit and Loss</a></li>
+<li><a href="section5-balance-sheet.html"><span class="kicker">Section 5</span>Balance Sheet</a></li>
+<li><a href="section6-debt.html"><span class="kicker">Section 6</span>Debt Structure</a></li>
+</ul></nav>
+<nav class="navgroup"><h2>Process</h2><ul>
+<li><a href="template-integration.html"><span class="kicker">Process</span>Template Integration</a></li>
+</ul></nav>
+<nav class="navgroup"><h2>Output</h2><ul>
+<li><a href="output-template.html"><span class="kicker">Output</span>Report Template and House Style</a></li>
+</ul></nav>
+    <div class="sidefoot">
+      <button id="theme" type="button">Dark mode</button>
+      <a href="https://github.com/Devanshindian/initial-portfolio-screener">Source on GitHub</a>
+    </div>
+  </aside>
+  <main class="main">
+    
+    <div class="wrap">
+      <div class="doc">
+        <article>
+          <header class="pagehead">
+            <div class="kicker">Section 2</div>
+            <h1>Section 2 — Initial Screening Criteria</h1>
+            <p>Six screening criteria. Four must be met; exactly four is a borderline flag that still passes.</p>
+            <div class="meta">
+              <span><code>references/section2-screening.md</code></span>
+              <span>9 min read</span>
+              <span><a href="https://github.com/Devanshindian/initial-portfolio-screener/blob/main/nandan-screener/references/section2-screening.md">View raw markdown</a></span>
+            </div>
+          </header>
+          <div class="md">
+<h1 id="section-2-initial-screening-criteria">Section 2 — Initial Screening Criteria<a class="headerlink" href="#section-2-initial-screening-criteria" title="Permanent link">#</a></h1>
+<p>Six screening criteria. <strong>Threshold: at least 4 of 6 must be met to proceed.</strong></p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Rules met (of 6)</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5 or 6</td>
+<td><strong>PASS</strong> (clean)</td>
+</tr>
+<tr>
+<td>exactly 4</td>
+<td><strong>PASS — borderline</strong> (carry into Key Flags Summary)</td>
+</tr>
+<tr>
+<td>3 or fewer</td>
+<td><strong>REJECT</strong> — issue rejection notice</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><strong>Threshold is 4 of 6 — do not get this wrong.</strong></p>
+<p>Rejection is a hard stop on the <strong>verdict</strong>, not on the <strong>analysis</strong> — exactly like Section 1. Even on a Section 2 reject, continue the full analysis through Sections 3–7. The rejection is surfaced at the top of Section 2 and again in the final verdict.</p>
+</blockquote>
+<p><strong>Scoring rule for unverifiable criteria:</strong> if a rule genuinely cannot be verified after checking all listed sources, count it as <strong>NOT met</strong> (conservative) and flag it prominently so a human can override. Never silently pass an unverifiable rule.</p>
+<hr />
+<h2 id="rule-1-operating-history-2-years">Rule 1 — Operating History &gt; 2 Years<a class="headerlink" href="#rule-1-operating-history-2-years" title="Permanent link">#</a></h2>
+<p><strong>Met if:</strong> the company has <strong>≥ 2 years of active operating history</strong> as of the screening date.</p>
+<ul>
+<li>Use the date operations actually commenced — not necessarily incorporation date.</li>
+<li><strong>Sources:</strong> pitch deck first. If not available, do a web search on the company.</li>
+</ul>
+<hr />
+<h2 id="rule-2-annualised-revenue-inr-15-crore">Rule 2 — Annualised Revenue &gt; INR 15 Crore<a class="headerlink" href="#rule-2-annualised-revenue-inr-15-crore" title="Permanent link">#</a></h2>
+<p><strong>Met if:</strong> annualised operating revenue <strong>&gt; ₹15 Cr</strong> (exclude Other Income — operating revenue only).</p>
+<p><strong>Step 1 — Pick the revenue figure.</strong></p>
+<ul>
+<li>Use the <strong>latest full-year audited</strong> revenue if it is the most recently completed FY.</li>
+<li>If MIS (<code>companies/[company_name]/mis_[period].md</code>) is more recent than the latest audited, use MIS instead.</li>
+</ul>
+<p><strong>Step 2 — Annualise only if the figure covers less than 12 months.</strong></p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>MIS shape</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Already 12 months (full-year, trailing-12M, or latest-FY)</td>
+<td>Use as-is — no annualisation</td>
+</tr>
+<tr>
+<td>Partial period (&lt; 12 months)</td>
+<td><code>Annualised Revenue = Revenue for the period × (12 ÷ months covered)</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Examples: 9M MIS → × 12/9; single quarter → × 12/3.</p>
+<p><strong>Step 3 — Run-rate sense-check (only if monthly/quarterly data exists).</strong> Compare the annualised figure to the most recent quarter's run-rate (avg of last 3 months × 12). Flag if the annualisation is being inflated by strong early months while the recent quarter is softening, or vice versa. If only annual data is available, this check is not possible — note it and move on.</p>
+<hr />
+<h2 id="rule-3-debt-to-tangible-net-worth-dtnw-3x">Rule 3 — Debt to Tangible Net Worth (D/TNW) ≤ 3x<a class="headerlink" href="#rule-3-debt-to-tangible-net-worth-dtnw-3x" title="Permanent link">#</a></h2>
+<p><strong>Met if: D/TNW ≤ 3x</strong>, assessed pre-disbursement (Nandan's proposed facility is NOT included).</p>
+<p><strong>Calculation 1 — D/TNW from latest audited (always required).</strong>
+Pull directly from <code>companies/[company_name]/dtnw_granularities.md</code> — Section C of that file already computes the D/TNW ratio with all adjustments applied. Apply the <strong>≤ 3x</strong> test.</p>
+<ul>
+<li><strong>Negative or zero TNW → fails outright</strong> (see note below).</li>
+</ul>
+<p><strong>Calculation 2 — Simplified D/E from MIS (supplementary).</strong>
+Pull from <code>companies/[company_name]/mis_[period].md</code> — use the latest available balance sheet figures.</p>
+<ul>
+<li><strong>Total Debt</strong> = Long-term borrowings + Short-term borrowings + contingent liabilities likely to crystallise</li>
+<li><strong>Equity</strong> = Paid-up equity share capital + reserves and surplus (as reported; do not apply ageing haircuts here)</li>
+<li>Treat CCDs and promoter subordinated loans as quasi-equity if identifiable — add to Equity, subtract from Total Debt.</li>
+<li><strong>Flag if simplified D/E &gt; 2.5x.</strong></li>
+<li>Always show the underlying values, not just the ratio: <code>D/E = Y.Yx (Total Debt ₹X Cr ÷ Equity ₹Z Cr)</code>.</li>
+</ul>
+<p><strong>Met / not-met is decided by Calculation 1</strong> (the audited ≤ 3x test). Calculation 2 is a supplementary recency flag only.</p>
+<h3 id="why-zero-or-negative-tnw-fails-do-not-read-a-negative-ratio-as-3x">Why zero or negative TNW fails — do not read a negative ratio as "≤ 3x"<a class="headerlink" href="#why-zero-or-negative-tnw-fails-do-not-read-a-negative-ratio-as-3x" title="Permanent link">#</a></h3>
+<p>The ≤ 3x test assumes <strong>TNW &gt; 0</strong>. If TNW is zero or negative, D/TNW produces a small or negative number that <em>looks</em> like a pass but is not — the ratio has stopped being a leverage signal. The ≤ 3x ceiling is a recovery-cushion idea: at 3x, the lender must recover ~75% of assets to be made whole, and that only holds while real (tangible) assets exceed debt.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TNW &gt; 0</td>
+<td>Recovery possible, cushion exists — ratio is meaningful</td>
+</tr>
+<tr>
+<td>TNW = 0</td>
+<td>100% recovery needed, zero margin</td>
+</tr>
+<tr>
+<td>TNW &lt; 0</td>
+<td>Lender takes a loss even at 100% recovery — framework collapses</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>TNW ≤ 0 → Rule 3 fails outright</strong>, regardless of what the arithmetic ratio prints. A negative D/TNW (positive debt ÷ negative TNW) is the worst case, not a pass. <em>(Example: Debt ₹49 Cr ÷ TNW −₹54 Cr = −0.9x — "−0.9 ≤ 3" is a math artifact; the company is tangibly insolvent.)</em></p>
+<hr />
+<h2 id="rule-4-founder-promoter-experience-4-years">Rule 4 — Founder / Promoter Experience &gt; 4 Years<a class="headerlink" href="#rule-4-founder-promoter-experience-4-years" title="Permanent link">#</a></h2>
+<p><strong>Met if:</strong> at least one promoter has <strong>&gt; 4 years of relevant</strong> industry or domain experience.</p>
+<ul>
+<li>"Relevant" = same or adjacent industry/domain — not total years of work experience.</li>
+<li><strong>Source:</strong> use the founder background already built in <code>companies/[company_name]/section0_output.md</code> (Section 0, Block C). Do not re-research — reuse what is already there.</li>
+<li>If unverifiable after all sources: flag <strong>"Unable to verify Rule 4 — founder background not available"</strong>, list what was checked, and count as not-met (conservative) pending human input.</li>
+</ul>
+<hr />
+<h2 id="rule-5-debtors-180-days-10-of-revenue">Rule 5 — Debtors &gt; 180 Days &lt; 10% of Revenue<a class="headerlink" href="#rule-5-debtors-180-days-10-of-revenue" title="Permanent link">#</a></h2>
+<p><strong>Met if:</strong> receivables outstanding <strong>&gt; 180 days</strong> are <strong>≤ 10% of total revenue</strong>.</p>
+<p><strong>Sources (in order):</strong></p>
+<ol>
+<li>If the user has uploaded a debtor ageing / AR ageing report in the company folder — use that directly.</li>
+<li>Otherwise, use <code>companies/[company_name]/dtnw_granularities.md</code> — Section E of that file already captures the debtor ageing buckets (180–365d + &gt;365d).</li>
+</ol>
+<p><strong>Denominator</strong> = total revenue of the same period as the ageing schedule.</p>
+<p>If no ageing schedule is available from either source: flag <strong>"Unable to verify Rule 5 — debtor ageing not available"</strong> and count as not-met (conservative).</p>
+<hr />
+<h2 id="rule-6-operating-cash-generative-or-cash-runway-6-months">Rule 6 — Operating Cash-Generative OR Cash Runway &gt; 6 Months<a class="headerlink" href="#rule-6-operating-cash-generative-or-cash-runway-6-months" title="Permanent link">#</a></h2>
+<p><strong>Met if:</strong> the company generates cash from operations (Period Cash flow &gt; 0), <strong>OR</strong> has a cash runway &gt; 6 months.</p>
+<ul>
+<li><strong>Period Cash flow &gt; 0</strong> → business is self-funding → Rule 6 met (runway effectively unlimited).</li>
+<li><strong>Period Cash flow &lt; 0</strong> → business is burning → compute runway under both ST-debt scenarios; met if base-case runway &gt; 6 months.</li>
+</ul>
+<h3 id="source">Source<a class="headerlink" href="#source" title="Permanent link">#</a></h3>
+<p>Use the already-filled template: <code>companies/[company_name]/Financial_Appraisal_[company_name].xlsx</code>, sheet <code>Info and Adjustments</code>, <strong>latest populated column</strong>. Source selection was settled at the template-fill step — nothing to re-decide here.</p>
+<blockquote>
+<p><strong>Period consistency:</strong> every flow figure must be for the same period as Row 7 (e.g. if MIS covers 9 months, all figures are 9-month figures). Do not mix periods across line items.</p>
+<p><strong>Source consistency:</strong> use one source (MIS or audited) consistently across all line items in this calculation. Do not mix MIS figures with audited figures within the same run.</p>
+</blockquote>
+<h3 id="period-cash-generation-burn">Period Cash Generation / (Burn)<a class="headerlink" href="#period-cash-generation-burn" title="Permanent link">#</a></h3>
+<pre><code>EBITDA                        = Row 29 (PBT) + Row 23 (Finance costs) + Row 24 (Depreciation)
++ Working-capital cash impact  = Row 126 + Row 127 + Row 128 + Row 131  (already signed — just add)
++ Capex cash impact            = Row 147 (tangible) + Row 148 (intangible)  (already negative = cash out)
+− Finance costs                = Row 23
+− Cash tax                     = Row 30 (Current Tax) ONLY — exclude Row 31 (Deferred Tax is non-cash)
+− Long-term principal          = 0  (assume refinanced — schedules rarely available)
+− Short-term debt repayment    = Scenario 1: 0  |  Scenario 2: Row 62 (ST Borrowings)
+= Period Cash Generation / (Burn)
+</code></pre>
+<h3 id="notes-on-key-line-items">Notes on Key Line Items<a class="headerlink" href="#notes-on-key-line-items" title="Permanent link">#</a></h3>
+<p><strong>Working capital</strong> — the four rows (126, 127, 128, 131) are auto-computed from the two most recent balance sheets already in the template. They are already signed as cash impacts — simply add them. Do not recompute manually.</p>
+<p><strong>Finance costs</strong> — use Row 23 directly from the latest column.</p>
+<p><strong>Long-term principal = 0</strong> — repayment schedules are rarely shared; always assume all long-term principal due has been refinanced.</p>
+<p><strong>Cash tax = Row 30 only</strong> — deferred tax (Row 31) is a non-cash accounting entry; no cash leaves the business.</p>
+<p><strong>Capex</strong> — Row 147 + Row 148, already stored as negative cash impacts. Add them directly.</p>
+<h3 id="runway-calculation">Runway Calculation<a class="headerlink" href="#runway-calculation" title="Permanent link">#</a></h3>
+<ul>
+<li><strong>Monthly burn</strong> = Period Cash (Burn) ÷ Row 7 (period months)</li>
+<li><strong>Unencumbered cash</strong> = Row 172 (total cash − encumbered); if no encumbrance detail, use Row 83</li>
+<li><strong>Runway (months)</strong> = Unencumbered cash ÷ |Monthly burn|</li>
+<li>Do NOT add Nandan's proposed disbursement to cash</li>
+</ul>
+<h3 id="two-st-debt-scenarios-always-present-both">Two ST-Debt Scenarios — Always Present Both<a class="headerlink" href="#two-st-debt-scenarios-always-present-both" title="Permanent link">#</a></h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>ST repayment treatment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scenario 1 — Refinanced (base case for pass/fail)</td>
+<td>ST repayment = 0</td>
+</tr>
+<tr>
+<td>Scenario 2 — Fully Repaid (stress)</td>
+<td>Subtract full ST borrowings (Row 62)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Decision:</strong> Rule 6 met if Period Cash flow &gt; 0, <strong>or</strong> base-case (refinanced) runway &gt; 6 months. Flag prominently if the fully-repaid runway falls below 6 months even when the base case passes.</p>
+<blockquote>
+<p><strong>Why pre-loan:</strong> the runway stress-tests recoverability — "if called to repay immediately, how long before the business runs out of cash?" A company burning ₹50L/month with ₹2 Cr cash has a 4-month runway; deploying ₹3 Cr of new debt does not make it 10 — the fund evaluates the pre-loan position. Hence Nandan's own disbursement is excluded.</p>
+</blockquote>
+<hr />
+<h2 id="output">Output<a class="headerlink" href="#output" title="Permanent link">#</a></h2>
+<p>Write to <code>companies/[company_name]/section2_output.md</code>. Two parts: scorecard table, then annexures.</p>
+<h3 id="part-1-scorecard-table">Part 1 — Scorecard Table<a class="headerlink" href="#part-1-scorecard-table" title="Permanent link">#</a></h3>
+<pre><code>Section 2 — Initial Screening: [X] of 6 met → [PASS / PASS-borderline / REJECT]
+
+| Criterion                                | Result          | Reasoning |
+|------------------------------------------|-----------------|-----------|
+| 1. Operating history &gt; 2 yrs             | Met / Not met   | [N years operating; date operations commenced; source.] |
+| 2. Annualised revenue &gt; ₹15 Cr           | Met / Not met   | [₹X Cr vs ₹15 Cr. Source (MIS / audited FY). Annualisation method if applicable — e.g. &quot;9M MIS ₹A Cr × 12/9 = ₹X Cr&quot;. Run-rate sense-check if monthly data exists.] |
+| 3. D/TNW ≤ 3x                            | Met / Not met   | [D/TNW (latest audited) = X.Xx (Total Debt ₹__ Cr ÷ TNW ₹__ Cr) — from dtnw_granularities.md Section C. D/E (MIS) = Y.Yx (Total Debt ₹__ Cr ÷ Equity ₹__ Cr). Flag if D/E &gt; 2.5x. Negative TNW → fails outright.] |
+| 4. Promoter experience &gt; 4 yrs           | Met / Not met   | [Promoter name — N yrs in (domain); from section0_output.md.] |
+| 5. Debtors &gt; 180 days &lt; 10% of revenue   | Met / Not met   | [Debtors &gt;180d = ₹X Cr = Z% of revenue vs 10% ceiling. Source: debtor ageing report (company folder) / dtnw_granularities.md Section E.] |
+| 6. Operating-profitable OR runway &gt; 6 mo | Met / Not met   | [Period cash flow: ₹X Cr (generative / burning). If burning: Scenario 1 (refinanced) = M months / Scenario 2 (fully repaid) = M' months vs 6-month floor.] |
+
+Flags: [borderline note if exactly 4 met; any unverified rule counted not-met; D/E &gt; 2.5x; fully-repaid runway &lt; 6 months]
+</code></pre>
+<p><strong>If REJECT (≤ 3 met):</strong> lead with the rejection notice and scorecard, then note "Full analysis continues in subsequent sections."</p>
+<h3 id="part-2-annexures">Part 2 — Annexures<a class="headerlink" href="#part-2-annexures" title="Permanent link">#</a></h3>
+<p><strong>Annexure A — D/TNW Calculation.</strong>
+Reproduce the D/TNW build-up from <code>dtnw_granularities.md</code> Section C: the TNW ladder, the Total Debt ladder, the D/TNW ratio (Total Debt ÷ TNW), and the supplementary MIS simplified D/E (Total Debt ÷ Equity). Show the numbers behind each ratio so the reader sees exactly what was adjusted.</p>
+<p><strong>Annexure B — Debtor Ageing.</strong>
+Include only if a debtor ageing report was available (either from the company folder or from <code>dtnw_granularities.md</code> Section E). Show the ageing buckets (Not Due / &lt;6m / 6m–1yr / 1–2yr / 2–3yr / &gt;3yr) and the &gt;180-day total as a % of revenue (the Rule 5 number).</p>
+<p><strong>Annexure C — Cash Runway (both scenarios).</strong>
+Show the full burn build-up and runway side by side for both scenarios:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Scenario 1 — ST Refinanced</th>
+<th>Scenario 2 — ST Fully Repaid</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Period Cash Generation / (Burn)</td>
+<td>₹X Cr</td>
+<td>₹X Cr</td>
+</tr>
+<tr>
+<td>Monthly burn</td>
+<td>₹X Cr / month</td>
+<td>₹X Cr / month</td>
+</tr>
+<tr>
+<td>Unencumbered cash</td>
+<td>₹X Cr</td>
+<td>₹X Cr</td>
+</tr>
+<tr>
+<td>Runway</td>
+<td>X months</td>
+<td>X months</td>
+</tr>
+</tbody>
+</table></div>
+<p>If the business is operating cash-generative (Period Cash flow &gt; 0), state that and note runway is effectively unlimited.</p>
+          </div>
+          <nav class="pager"><a class="prev" href="section1-rejection.html"><span class="lbl">Previous</span><span class="ttl">Preliminary Rejection</span></a><a class="next" href="section3-cashflow.html"><span class="lbl">Next</span><span class="ttl">Cash Flow</span></a></nav>
+        </article>
+        <aside class="toc">
+          <div class="h">On this page</div>
+          <div class="toc">
+<ul>
+<li><a href="#rule-1-operating-history-2-years">Rule 1 — Operating History &gt; 2 Years</a></li>
+<li><a href="#rule-2-annualised-revenue-inr-15-crore">Rule 2 — Annualised Revenue &gt; INR 15 Crore</a></li>
+<li><a href="#rule-3-debt-to-tangible-net-worth-dtnw-3x">Rule 3 — Debt to Tangible Net Worth (D/TNW) ≤ 3x</a><ul>
+<li><a href="#why-zero-or-negative-tnw-fails-do-not-read-a-negative-ratio-as-3x">Why zero or negative TNW fails — do not read a negative ratio as "≤ 3x"</a></li>
+</ul>
+</li>
+<li><a href="#rule-4-founder-promoter-experience-4-years">Rule 4 — Founder / Promoter Experience &gt; 4 Years</a></li>
+<li><a href="#rule-5-debtors-180-days-10-of-revenue">Rule 5 — Debtors &gt; 180 Days &lt; 10% of Revenue</a></li>
+<li><a href="#rule-6-operating-cash-generative-or-cash-runway-6-months">Rule 6 — Operating Cash-Generative OR Cash Runway &gt; 6 Months</a><ul>
+<li><a href="#source">Source</a></li>
+<li><a href="#period-cash-generation-burn">Period Cash Generation / (Burn)</a></li>
+<li><a href="#notes-on-key-line-items">Notes on Key Line Items</a></li>
+<li><a href="#runway-calculation">Runway Calculation</a></li>
+<li><a href="#two-st-debt-scenarios-always-present-both">Two ST-Debt Scenarios — Always Present Both</a></li>
+</ul>
+</li>
+<li><a href="#output">Output</a><ul>
+<li><a href="#part-1-scorecard-table">Part 1 — Scorecard Table</a></li>
+<li><a href="#part-2-annexures">Part 2 — Annexures</a></li>
+</ul>
+</li>
+</ul>
+</div>
+
+        </aside>
+      </div>
+    </div>
+
+  </main>
+</div>
+<script>
+(function () {
+  var root = document.documentElement;
+  var saved = null;
+  try { saved = localStorage.getItem('nps-theme'); } catch (e) {}
+  if (saved) root.setAttribute('data-theme', saved);
+
+  function currentTheme() {
+    return root.getAttribute('data-theme') ||
+      (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  }
+  var toggle = document.getElementById('theme');
+  function label() { if (toggle) toggle.textContent = currentTheme() === 'dark' ? 'Light mode' : 'Dark mode'; }
+  label();
+  if (toggle) toggle.addEventListener('click', function () {
+    var next = currentTheme() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('nps-theme', next); } catch (e) {}
+    label();
+  });
+
+  // mobile drawer
+  var side = document.querySelector('.side');
+  var btn = document.getElementById('menu');
+  var scrim;
+  function close() {
+    side.classList.remove('open');
+    if (scrim) { scrim.remove(); scrim = null; }
+  }
+  if (btn) btn.addEventListener('click', function () {
+    if (side.classList.contains('open')) return close();
+    side.classList.add('open');
+    scrim = document.createElement('div');
+    scrim.className = 'scrim';
+    scrim.addEventListener('click', close);
+    document.body.appendChild(scrim);
+  });
+
+  // nav filter
+  var filter = document.getElementById('filter');
+  if (filter) filter.addEventListener('input', function () {
+    var q = filter.value.trim().toLowerCase();
+    document.querySelectorAll('.navgroup li').forEach(function (li) {
+      li.classList.toggle('hide', q !== '' && li.textContent.toLowerCase().indexOf(q) === -1);
+    });
+    document.querySelectorAll('.navgroup').forEach(function (g) {
+      var any = Array.prototype.some.call(g.querySelectorAll('li'), function (li) { return !li.classList.contains('hide'); });
+      g.style.display = any ? '' : 'none';
+    });
+  });
+
+  // active heading in the right rail
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  if (links.length) {
+    var map = {};
+    var targets = [];
+    links.forEach(function (a) {
+      var el = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));
+      if (el) { map[el.id] = a; targets.push(el); }
+    });
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        links.forEach(function (a) { a.classList.remove('on'); });
+        var a = map[en.target.id];
+        if (a) a.classList.add('on');
+      });
+    }, { rootMargin: '0px 0px -72% 0px', threshold: 0 });
+    targets.forEach(function (t) { obs.observe(t); });
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Debt Structure — Nandan Initial Portfolio Screener</title>
+<meta name="description" content="Lender quality, loan types, security, rates, related-party debt, encumbered deposits and maturity profile.">
+<meta property="og:title" content="Debt Structure — Nandan Initial Portfolio Screener">
+<meta property="og:description" content="Lender quality, loan types, security, rates, related-party debt, encumbered deposits and maturity profile.">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#128202;</text></svg>">
+
+</head>
+<body>
+<div class="topbar">
+  <button id="menu" aria-label="Open navigation">Menu</button>
+  <span class="t">Nandan Initial Portfolio Screener</span>
+</div>
+<div class="shell">
+  <aside class="side">
+    <a class="brand" href="index.html">
+      <span class="mark">Nandan Initial<br>Portfolio Screener</span>
+      <span class="sub">Screening framework reference</span>
+    </a>
+    <input id="filter" class="filter" type="search" placeholder="Filter sections" aria-label="Filter sections">
+    <nav class="navgroup"><h2>Framework</h2><ul>
+<li><a href="section0-overview.html"><span class="kicker">Section 0</span>Company Overview</a></li>
+<li><a href="section1-rejection.html"><span class="kicker">Section 1</span>Preliminary Rejection</a></li>
+<li><a href="section2-screening.html"><span class="kicker">Section 2</span>Initial Screening</a></li>
+<li><a href="section3-cashflow.html"><span class="kicker">Section 3</span>Cash Flow</a></li>
+<li><a href="section4-pl.html"><span class="kicker">Section 4</span>Profit and Loss</a></li>
+<li><a href="section5-balance-sheet.html"><span class="kicker">Section 5</span>Balance Sheet</a></li>
+<li><a href="section6-debt.html" class="on"><span class="kicker">Section 6</span>Debt Structure</a></li>
+</ul></nav>
+<nav class="navgroup"><h2>Process</h2><ul>
+<li><a href="template-integration.html"><span class="kicker">Process</span>Template Integration</a></li>
+</ul></nav>
+<nav class="navgroup"><h2>Output</h2><ul>
+<li><a href="output-template.html"><span class="kicker">Output</span>Report Template and House Style</a></li>
+</ul></nav>
+    <div class="sidefoot">
+      <button id="theme" type="button">Dark mode</button>
+      <a href="https://github.com/Devanshindian/initial-portfolio-screener">Source on GitHub</a>
+    </div>
+  </aside>
+  <main class="main">
+    
+    <div class="wrap">
+      <div class="doc">
+        <article>
+          <header class="pagehead">
+            <div class="kicker">Section 6</div>
+            <h1>Section 6 — Debt Structure Analysis</h1>
+            <p>Lender quality, loan types, security, rates, related-party debt, encumbered deposits and maturity profile.</p>
+            <div class="meta">
+              <span><code>references/section6-debt.md</code></span>
+              <span>4 min read</span>
+              <span><a href="https://github.com/Devanshindian/initial-portfolio-screener/blob/main/nandan-screener/references/section6-debt.md">View raw markdown</a></span>
+            </div>
+          </header>
+          <div class="md">
+<h1 id="section-6-debt-structure-analysis">Section 6 — Debt Structure Analysis<a class="headerlink" href="#section-6-debt-structure-analysis" title="Permanent link">#</a></h1>
+<p>How the company is borrowed — <em>who</em> lends, on <em>what terms</em>, against <em>what security</em>, and where the concentration / refinancing risks sit. Built from the company-shared debt document </p>
+<h2 id="source-step-0-normalize-the-debt-schedule-do-this-first">Source &amp; Step 0 — Normalize the debt schedule (do this first)<a class="headerlink" href="#source-step-0-normalize-the-debt-schedule-do-this-first" title="Permanent link">#</a></h2>
+<p>The debt document is company-shared and arrives in <strong>any</strong> format — PDF or xlsx, wildly different columns (some group by ST/LT, some are multi-entity &amp; multi-currency, some are all private debentures with the rate buried in a label). So before analysing anything, <strong>normalize every facility into one common row</strong>:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Lender</strong></td>
+<td>name</td>
+</tr>
+<tr>
+<td><strong>Lender category</strong></td>
+<td>Bank / NBFC / AIF-or-Fund / NCD-OCD (private debenture) / ICD / Promoter-Director-Related</td>
+</tr>
+<tr>
+<td><strong>Facility type</strong></td>
+<td>CC, OD, Term Loan, WCDL, Bill Discounting, Auto Loan, NCD, OCD, ICD, Unsecured Loan</td>
+</tr>
+<tr>
+<td><strong>Outstanding (₹ Cr)</strong></td>
+<td>convert any FX (USD/AED) to INR at the stated rate — <strong>flag the conversion</strong></td>
+</tr>
+<tr>
+<td><strong>Interest rate</strong></td>
+<td>from a rate/ROI column, <em>or</em> embedded in a "type heading" (e.g. "NCD ‑17%")</td>
+</tr>
+<tr>
+<td><strong>Tenure / maturity</strong></td>
+<td>months, or final-repayment date; "repayable on demand" for revolving lines / ICDs</td>
+</tr>
+<tr>
+<td><strong>Security / collateral</strong></td>
+<td>stock hypothecation, FD lien, property charge, car hypothecation, none</td>
+</tr>
+<tr>
+<td><strong>Guarantee</strong></td>
+<td>personal / corporate guarantee given</td>
+</tr>
+<tr>
+<td><strong>Related-party flag</strong></td>
+<td>director / relative / related-company / promoter ICD?</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="step-1-lender-quality-profile">Step 1 — Lender quality / profile<a class="headerlink" href="#step-1-lender-quality-profile" title="Permanent link">#</a></h2>
+<p>Classify the lender base:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Lender profile</th>
+<th>Signal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1–3 lenders, mostly large scheduled banks</td>
+<td>🟢 <strong>Green</strong> — banks are selective; their presence is credit validation</td>
+</tr>
+<tr>
+<td>Mix of banks and NBFCs / AIFs</td>
+<td>🟡 <strong>Amber</strong> — banks likely at their exposure limit; higher-cost capital filling the gap</td>
+</tr>
+<tr>
+<td>Only NBFCs / AIFs / ICDs — no bank exposure</td>
+<td>🔴 <strong>Red</strong> — absence of bank lending suggests banks declined</td>
+</tr>
+<tr>
+<td>Single lender — promoter / holding-co ICD only</td>
+<td>🔴 <strong>Red</strong> — no third-party market validation of creditworthiness</td>
+</tr>
+</tbody>
+</table></div>
+<p>Plus:</p>
+<ul>
+<li><strong>Lender count</strong> and <strong>concentration</strong> — the largest lender as a % of total debt (heavy dependence on one lender is a risk).</li>
+<li><strong>Bank vs non-bank split</strong> — % of debt from scheduled banks.</li>
+<li><strong>Web-search any unfamiliar lenders</strong> — reputable banks / established NBFCs / known AIFs, or obscure? Note credibility.</li>
+</ul>
+<hr />
+<h2 id="step-2-loan-type-facility-mix">Step 2 — Loan-type (facility) mix<a class="headerlink" href="#step-2-loan-type-facility-mix" title="Permanent link">#</a></h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Facility type</th>
+<th># facilities</th>
+<th>Outstanding ₹ Cr</th>
+<th>% of debt</th>
+<th>Interest-rate range</th>
+<th>Typical tenure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<p>What kinds of debt the company runs on and on what terms (e.g. CC/OD = working capital, ~8–9%, revolving · Term loans 9–16%, 36–60M · NCD/OCD 15–18%, 24–36M · ICD/promoter, on-demand).</p>
+<hr />
+<h2 id="step-3-security-collateral">Step 3 — Security / collateral<a class="headerlink" href="#step-3-security-collateral" title="Permanent link">#</a></h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Facility type</th>
+<th>Typical security / collateral</th>
+<th>Guarantee</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<p>Map each facility to what's pledged — e.g. CC/OD → stock hypothecation; Term loan → FD lien / property charge; Auto loan → car hypothecation; Unsecured loan / NCD → none (sometimes a personal guarantee).</p>
+<hr />
+<h2 id="step-4-secured-vs-unsecured-average-rates">Step 4 — Secured vs Unsecured + average rates<a class="headerlink" href="#step-4-secured-vs-unsecured-average-rates" title="Permanent link">#</a></h2>
+<ul>
+<li><strong>Secured vs unsecured split</strong> — % of outstanding that is secured vs unsecured.</li>
+<li><strong>Weighted-average interest rate</strong> = Σ(rate × outstanding) ÷ Σ outstanding — report it <strong>overall and split by secured / unsecured</strong> (secured is usually cheaper).</li>
+<li><strong>Read it neutrally</strong> — a higher unsecured share at higher rates is <strong>not</strong> automatically "banks declined": founders often simply lack collateral to pledge. Just report the mix and the blended cost; don't editorialise.</li>
+</ul>
+<hr />
+<h2 id="step-5-related-party-promoter-debt">Step 5 — Related-party / promoter debt<a class="headerlink" href="#step-5-related-party-promoter-debt" title="Permanent link">#</a></h2>
+<h2 id="-amount-of-debt-from-directors-relatives-related-companies-promoter-icds-the-docs-flag-these-a-related-yesno-column-a-directors-and-relatives-group-or-a-guarantee-column">- Amount &amp; % of debt from <strong>directors / relatives / related companies / promoter ICDs</strong> (the docs flag these — a "Related" Yes/No column, a "Directors and Relatives" group, or a guarantee column).<a class="headerlink" href="#-amount-of-debt-from-directors-relatives-related-companies-promoter-icds-the-docs-flag-these-a-related-yesno-column-a-directors-and-relatives-group-or-a-guarantee-column" title="Permanent link">#</a></h2>
+<h2 id="step-6-maturity-refinancing-fx">Step 6 — Maturity / refinancing + FX<a class="headerlink" href="#step-6-maturity-refinancing-fx" title="Permanent link">#</a></h2>
+<ul>
+<li><strong>Maturity split</strong> — short-term revolving (CC/OD, repayable-on-demand ICDs) vs long-term (term loans, NCDs).</li>
+<li><strong>Near-term maturities</strong> — flag if a large share of debt falls due within ~12 months → <strong>refinancing risk</strong> (acute if the lender profile is already amber/red or credit conditions tighten).</li>
+<li><strong>FX exposure</strong> — any foreign-currency debt (USD / AED, as in the Vananam tracker) carries currency risk on servicing. Note the FC-denominated outstanding and the rupee-depreciation sensitivity.</li>
+</ul>
+<hr />
+<h2 id="annexure">Annexure<a class="headerlink" href="#annexure" title="Permanent link">#</a></h2>
+<p><strong>Always attach the full (normalized) debt schedule</strong> as an annexure, and in the body simply state <em>"detailed debt schedule attached in the Annexure."</em></p>
+<hr />
+<h2 id="output">Output<a class="headerlink" href="#output" title="Permanent link">#</a></h2>
+<p>Write to <code>companies/[company]/section6_output.md</code>:</p>
+<ol>
+<li><strong>Lender profile</strong> — verdict 🟢/🟡/🔴 + reason; lender count, concentration (largest lender %), bank vs non-bank split; web-search credibility note.</li>
+<li><strong>Loan-type table</strong> — facility type · # · ₹ Cr · % of debt · rate range · tenure.</li>
+<li><strong>Security table</strong> — facility type · typical security · guarantee.</li>
+<li><strong>Secured vs unsecured + avg rate</strong> — % secured / unsecured; weighted-avg rate overall and by secured/unsecured.</li>
+<li><strong>Related-party debt</strong> — ₹X Cr (Y%); note the D/TNW quasi-equity reclassification if applicable.</li>
+<li><strong>Encumbered FD / cash collateral</strong> — ₹X Cr locked → flag to exclude from Section 2 runway cash.</li>
+<li><strong>Maturity / refinancing + FX</strong> — ST vs LT split, near-term-maturity flag, FC debt + FX risk.</li>
+<li><strong>Annexure pointer</strong> — "Full debt schedule attached in the Annexure."</li>
+</ol>
+          </div>
+          <nav class="pager"><a class="prev" href="section5-balance-sheet.html"><span class="lbl">Previous</span><span class="ttl">Balance Sheet</span></a><a class="next" href="template-integration.html"><span class="lbl">Next</span><span class="ttl">Template Integration</span></a></nav>
+        </article>
+        <aside class="toc">
+          <div class="h">On this page</div>
+          <div class="toc">
+<ul>
+<li><a href="#source-step-0-normalize-the-debt-schedule-do-this-first">Source &amp; Step 0 — Normalize the debt schedule (do this first)</a></li>
+<li><a href="#step-1-lender-quality-profile">Step 1 — Lender quality / profile</a></li>
+<li><a href="#step-2-loan-type-facility-mix">Step 2 — Loan-type (facility) mix</a></li>
+<li><a href="#step-3-security-collateral">Step 3 — Security / collateral</a></li>
+<li><a href="#step-4-secured-vs-unsecured-average-rates">Step 4 — Secured vs Unsecured + average rates</a></li>
+<li><a href="#step-5-related-party-promoter-debt">Step 5 — Related-party / promoter debt</a></li>
+<li><a href="#-amount-of-debt-from-directors-relatives-related-companies-promoter-icds-the-docs-flag-these-a-related-yesno-column-a-directors-and-relatives-group-or-a-guarantee-column">- Amount &amp; % of debt from directors / relatives / related companies / promoter ICDs (the docs flag these — a "Related" Yes/No column, a "Directors and Relatives" group, or a guarantee column).</a></li>
+<li><a href="#step-6-maturity-refinancing-fx">Step 6 — Maturity / refinancing + FX</a></li>
+<li><a href="#annexure">Annexure</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</div>
+
+        </aside>
+      </div>
+    </div>
+
+  </main>
+</div>
+<script>
+(function () {
+  var root = document.documentElement;
+  var saved = null;
+  try { saved = localStorage.getItem('nps-theme'); } catch (e) {}
+  if (saved) root.setAttribute('data-theme', saved);
+
+  function currentTheme() {
+    return root.getAttribute('data-theme') ||
+      (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  }
+  var toggle = document.getElementById('theme');
+  function label() { if (toggle) toggle.textContent = currentTheme() === 'dark' ? 'Light mode' : 'Dark mode'; }
+  label();
+  if (toggle) toggle.addEventListener('click', function () {
+    var next = currentTheme() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('nps-theme', next); } catch (e) {}
+    label();
+  });
+
+  // mobile drawer
+  var side = document.querySelector('.side');
+  var btn = document.getElementById('menu');
+  var scrim;
+  function close() {
+    side.classList.remove('open');
+    if (scrim) { scrim.remove(); scrim = null; }
+  }
+  if (btn) btn.addEventListener('click', function () {
+    if (side.classList.contains('open')) return close();
+    side.classList.add('open');
+    scrim = document.createElement('div');
+    scrim.className = 'scrim';
+    scrim.addEventListener('click', close);
+    document.body.appendChild(scrim);
+  });
+
+  // nav filter
+  var filter = document.getElementById('filter');
+  if (filter) filter.addEventListener('input', function () {
+    var q = filter.value.trim().toLowerCase();
+    document.querySelectorAll('.navgroup li').forEach(function (li) {
+      li.classList.toggle('hide', q !== '' && li.textContent.toLowerCase().indexOf(q) === -1);
+    });
+    document.querySelectorAll('.navgroup').forEach(function (g) {
+      var any = Array.prototype.some.call(g.querySelectorAll('li'), function (li) { return !li.classList.contains('hide'); });
+      g.style.display = any ? '' : 'none';
+    });
+  });
+
+  // active heading in the right rail
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  if (links.length) {
+    var map = {};
+    var targets = [];
+    links.forEach(function (a) {
+      var el = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));
+      if (el) { map[el.id] = a; targets.push(el); }
+    });
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        links.forEach(function (a) { a.classList.remove('on'); });
+        var a = map[en.target.id];
+        if (a) a.classList.add('on');
+      });
+    }, { rootMargin: '0px 0px -72% 0px', threshold: 0 });
+    targets.forEach(function (t) { obs.observe(t); });
+  }
+})();
+</script>
+</body>
+</html>
